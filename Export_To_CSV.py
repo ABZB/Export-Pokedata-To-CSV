@@ -121,11 +121,14 @@ def import_levelup(move_edit_data, move_list, pokemon_list):
 
 
 def main():
-    move_edit_data = Pokedata()
+    pokearray = Pokedata()
     action_choice = ''
     
-    current_directory = os.getcwd()
-    move_list_path = os.path.join(current_directory, 'move_list.csv')
+    reference_directory = os.path.join(os.getcwd(),'config and data')
+    move_list_path = os.path.join(reference_directory, 'move_list.csv')
+
+    tutor_table_offset = 0
+    tutor_table_raw = []
 
     move_list = []
     pokemon_list = []
@@ -134,12 +137,12 @@ def main():
     while True:
         temp = input('Enter Generation, (XY, ORAS, SM, USUM)\n').upper()
         if(temp in {'XY', 'ORAS', 'SM', 'USUM'}):
-            move_edit_data.game = temp
+            pokearray.game = temp
             break
         else:
             print(temp, 'is not valid\n\n')
         
-    pokemon_list_path = os.path.join(current_directory, 'pokemon_list_' + move_edit_data.game + '.csv')
+    pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
 
     #load move names
     with open(move_list_path, newline = '', encoding='utf-8-sig') as csvfile:
@@ -169,6 +172,31 @@ def main():
             else:
                 break
     print('Loaded Pokemon Name List')
+
+    #load data from config file
+    with open(os.path.join(reference_directory, 'other.csv'), newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+
+        #move tutor line
+        match pokearray.game:
+            case 'XY':
+                tutor_table_offset = temp[1][1]
+            case 'ORAS':
+                tutor_table_offset = temp[1][2]
+            case 'SM':
+                tutor_table_offset = temp[1][3]
+            case 'USUM':
+                tutor_table_offset = temp[1][4]
+
+
+
+
+
+
+
 
     while True:
 
