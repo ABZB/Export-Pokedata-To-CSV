@@ -327,6 +327,7 @@ def main():
     pokearray.personal_path = os.path.join(romfs_path, get_GARC_path('Personal', pokearray.game))
     pokearray.evolution_path = os.path.join(romfs_path, get_GARC_path('Evolution', pokearray.game))
     pokearray.levelup_path = os.path.join(romfs_path, get_GARC_path('Levelup', pokearray.game))
+    pokearray.egg_path = os.path.join(romfs_path, get_GARC_path('Levelup', pokearray.game))
 
     print('Now loading GARCs...')
 
@@ -334,6 +335,7 @@ def main():
     load_GARC(pokearray, pokearray.personal_path, 'Personal')
     load_GARC(pokearray, pokearray.evolution_path, 'Evolution')
     load_GARC(pokearray, pokearray.levelup_path, 'Levelup')
+    load_GARC(pokearray, pokearray.egg_path, 'Egg')
 
 
     print('GARCs Loaded')
