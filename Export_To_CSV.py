@@ -155,6 +155,37 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
                 temp_array.append([index, 'Move Tutor', pokearray.special_tutor_name_list[bit_count][0], pokearray.special_tutor_name_list[bit_count][1]])
             bit_count += 1
 
+        #finally the BP move tutors. Depends on ORAS or USUM
+
+        if(pokearray.game == 'ORAS'):
+            bit_count = 0
+            #ORAS jumps around a little
+            for offset in [0X40, 0X41, 0X44, 0X45, 0X46, 0X48, 0X49, 0X4C, 0X4D]:
+                byte_value = personal[0x40 + offset]
+
+                #iterate through the bits of current byte
+                for bit_position in range(8):
+                    #check if this bit is 1
+                    if(byte_value & (1 << bit_position) == 1):
+                        #Index, Move Tutor, Tutor #, move name
+                        temp_array.append([index, 'Move Tutor', 1 if bit_count <= 15 else 2 if bit_count <= 31 else 3 if bit_count <= 48 else 4, pokearray.bp_tutor_move_name_list[bit_count]])
+                    bit_count += 1
+
+        #todo for USUM open shop.cro, grab the relocation patch values for the 4 tutors and the table of lengths, and use that instead of hardcoded table
+
+        elif(pokearray.game == 'USUM'):
+            bit_count = 0
+            for offset in range(9):
+                byte_value = personal[0x40 + offset]
+
+                #iterate through the bits of current byte
+                for bit_position in range(8):
+                    #check if this bit is 1
+                    if(byte_value & (1 << bit_position) == 1):
+                        #Index, TM/HM, [TM][HM] XXX, move name
+                        temp_array.append([index, 'Move Tutor', 'Big Wave Beach' if bit_count <= 15 else 'Heahea Beach' if bit_count <= 31 else "Ula'ula Beach" if bit_count <= 48 else 'Battle Tree', pokearray.bp_tutor_move_name_list[bit_count]])
+                    bit_count += 1
+
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
