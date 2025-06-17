@@ -2,7 +2,7 @@ from garc_handling import *
 from utilities import *
 from my_constants import *
 
-def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
+def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
     index = target_index
@@ -32,7 +32,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
             #if it's not 0, handle all of the alt formes now
             if(temp_index != 0):
                 for alt_forme_numbers in range(personal[0x20] - 1):
-                    pokearray = build_output_array(pokearray, index, temp_index + alt_forme_numbers, alt_forme_numbers + 1)
+                    pokearray = build_total_output_array(pokearray, index, temp_index + alt_forme_numbers, alt_forme_numbers + 1)
                 #this will ultimately find the personal file of the least-indexed alt forme, before it is reached, to handle exiting at the proper time
                 if(temp_index < least_alt_index):
                     least_alt_index = temp_index
@@ -403,6 +403,75 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
         else:
             index += 1
 
+def build_summary_output_array(pokearray):
+
+    for index, personal in enumerate(pokearray.personal):
+        temp_array = []
+        if(index == 0):
+            continue
+
+        #index
+        temp_array.append(index)
+
+        #Species/Forme Name
+        temp_array.append(pokearray.pokemon_name_list[index])
+
+        #Types
+        temp_array.append(pokemon_types[personal[6]])
+        if(personal[6] ==  personal[7]):
+            temp_array.append('')
+        else:
+            temp_array.append(pokemon_types[personal[7]])
+
+
+        #Stats
+        temp_array.append(personal[0])
+        temp_array.append(personal[1])
+        temp_array.append(personal[2])
+        temp_array.append(personal[4])
+        temp_array.append(personal[5])
+        temp_array.append(personal[3])
+
+        temp_array.append('')
+
+        #BST
+        bst = 0
+        for x in range(6):
+            bst += personal[3]
+
+        abst = bst - min(personal[1], personal[4])
+        temp_array.append(bst)
+        temp_array.append(abst)
+
+
+        temp_array.append('')
+
+        #Abilities
+        for x in range(3):
+            temp_array.append(pokearray.ability_name_list[personal[0x18 + x]])
+
+        
+        #Special Z-Move
+        if(pokearray.game in {'SM', 'USUM'}):
+            if(from_little_bytes_int(personal[0x4C:0x4E]) != 0):
+
+                
+                #Z-Move
+                temp_array.append(pokearray.move_name_list[from_little_bytes_int(personal[0x50:0x52])])
+
+                #Z-Crystal
+                temp_array.append(pokearray.item_name_list[from_little_bytes_int(personal[0x4C:0x4E])])
+
+                #Base Move
+                temp_array.append(pokearray.move_name_list[from_little_bytes_int(personal[0x4E:0x50])])
+
+
+        #put the fully built pokemon output thing into its place
+        pokearray.write_array.append(temp_array)
+
+    return(pokearray)
+
+
 def main():
     pokearray = Pokedata()
     
@@ -588,25 +657,78 @@ def main():
         for x in tutor_table_raw:
             pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[x])
 
-    pokearray.write_array = [[]]*(len(pokearray.personal))
 
-    pokearray = build_output_array(pokearray)
+            
+    dump_bool = False
+    summary_bool = False
+
+    #Query what to generate
+    while True:
+        temp = input('Generate full dump file? (y/n)\n').lower()
+        if(temp in {'y', 'n'}):
+            if(temp == 'y'):
+                dump_bool = True
+            break
+        else:
+            print(temp, 'is not valid\n\n')
 
     while True:
-        try:
-            with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
-                writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
-
-                #write the header line
-                writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2'])
-
-                for entry in pokearray.write_array:
-                    for row in entry:
-                        writer_head.writerow(row)
-                    writer_head.writerow(['', '', '', ''])
+        temp = input('Generate small summary table? (y/n)\n').lower()
+        if(temp in {'y', 'n'}):
+            if(temp == 'y'):
+                summary_bool = True
             break
-        except Exception as e:
-            print(e)
+        else:
+            print(temp, 'is not valid\n\n')
+
+
+
+
+
+    if(dump_bool):
+        pokearray.write_array = [[]]*(len(pokearray.personal))
+
+        pokearray = build_total_output_array(pokearray)
+
+        while True:
+            try:
+                with open(asksaveasfilename(title='Save Full Dump File', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+                    writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
+
+                    #write the header line
+                    writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2'])
+
+                    for entry in pokearray.write_array:
+                        for row in entry:
+                            writer_head.writerow(row)
+                        writer_head.writerow(['', '', '', ''])
+                break
+            except Exception as e:
+                print(e)
+
+    if(summary_bool):
+        pokearray.write_array = []
+
+        pokearray = build_summary_output_array(pokearray)
+
+        while True:
+            try:
+                with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+                    writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
+
+                    #write the header line
+                    if(pokearray.game in {'XY', 'ORAS'}):
+                        header_row = ['Personal Index', 'Name', 'Type 1', 'Type 2', 'HP', 'ATK', 'DEF', 'SpA', 'SpD', 'SPE', '', 'BST', 'ABST', '', 'Ability 1', 'Ability 2', 'Ability 3']
+                    else:
+                        header_row = ['Personal Index', 'Name', 'Type 1', 'Type 2', 'HP', 'ATK', 'DEF', 'SpA', 'SpD', 'SPE', '', 'BST', 'ABST', '', 'Ability 1', 'Ability 2', 'Ability 3', 'Special Z-Move', 'Z-Crystal', 'Base Move']
+
+                    writer_head.writerow(header_row)
+
+                    for row in pokearray.write_array:
+                            writer_head.writerow(row)
+                break
+            except Exception as e:
+                print(e)
 
 
 

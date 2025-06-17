@@ -13,3 +13,6 @@
 *.pyc
 *.json
 *.exe
+*.json
+.vs/Export-Pokedata-To-CSV/v17/.suo
+*.zip
