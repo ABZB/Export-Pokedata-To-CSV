@@ -1,1 +1,3 @@
 *.vsidx
+.vs/slnx.sqlite
+.vs/Export-Pokedata-To-CSV/v17/.suo
