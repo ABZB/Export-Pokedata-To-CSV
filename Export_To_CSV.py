@@ -7,6 +7,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
     
     #iterate over all files
     index = target_index
+    least_alt_index = 0xFFFF
 
     while True:
         temp_array = []
