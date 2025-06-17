@@ -109,6 +109,19 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
         #Weight (decimeters)
         temp_array.append([index, 'Weight', from_little_bytes_int(personal[0x24:0x26])])
         
+        #Special Z-Move
+        if(pokearray.game in {'SM', 'USUM'}):
+            if(from_little_bytes_int(personal[0x4C:0x4E]) != 0):
+                #Z-Crystal
+                temp_array.append([index, 'Z-Crystal', pokearray.item_name_list[from_little_bytes_int(personal[0x4C:0x4E])]])
+
+                #Base Move
+                temp_array.append([index, 'Base Move', pokearray.move_name_list[from_little_bytes_int(personal[0x4E:0x50])]])
+
+                #Z-Move
+                temp_array.append([index, 'Z-Move', pokearray.move_name_list[from_little_bytes_int(personal[0x50:0x52])]])
+
+
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
