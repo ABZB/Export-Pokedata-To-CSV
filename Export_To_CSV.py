@@ -3,7 +3,7 @@ from garc_handling import *
 from utilities import *
 from my_constants import *
 
-def build_output_array(pokearray, base_index = 0, target_index = 0):
+def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
     
     #iterate over all files
     index = target_index
@@ -29,7 +29,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
             #if it's not 0, handle all of the alt formes now
             if(temp_index != 0):
                 for forme_number in range(personal[0x20] - 1):
-                    pokearray = build_output_array(pokearray, index, temp_index + forme_number)
+                    pokearray = build_output_array(pokearray, index, temp_index + forme_number, forme_number)
                 #this will ultimately find the personal file of the least-indexed alt forme, before it is reached, to handle exiting at the proper time
                 if(temp_index < least_alt_index):
                     least_alt_index = temp_index
