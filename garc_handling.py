@@ -1,7 +1,6 @@
 import csv
 from tkinter.filedialog import askdirectory, asksaveasfilename, askopenfilename
 from utilities import *
-from functools import reduce
 
 def binary_file_to_array(file_path, offset = 0, read_length = 0):
 
@@ -137,6 +136,9 @@ def load_GARC(poke_edit_data, garc_path, target):
                 case "Evolution":
                     poke_edit_data.evolution = file_array
 
+                case "Egg":
+                    poke_edit_data.egg = file_array
+
 
         except Exception as e:
             print(e)
@@ -160,6 +162,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '2/1/4'
                 case "Evolution":
                     targetpath = '2/1/5'
+                case "Egg":
+                    targetpath = '2/1/3'
         case "ORAS":
             match target:
                 case "Personal":
@@ -168,6 +172,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '1/9/1'
                 case"Evolution":
                     targetpath = '1/9/2'
+                case "Egg":
+                    targetpath = '1/9/0'
         case "SM":
             match target:
                 case"Personal":
@@ -176,6 +182,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '0/1/3'
                 case"Evolution":
                     targetpath = '0/1/4'
+                case "Egg":
+                    targetpath = '0/1/2'
         case "USUM":
             match target:
                 case"Personal":
@@ -184,6 +192,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '0/1/3'
                 case"Evolution":
                     targetpath = '0/1/4'
+                case "Egg":
+                    targetpath = '0/1/2'
         case "Select Game":
                print("Error: Game not set")
                return

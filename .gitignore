@@ -3,3 +3,4 @@
 .vs/Export-Pokedata-To-CSV/v17/.suo
 ~$Layout of Report.xlsx
 *.sqlite
+*.json

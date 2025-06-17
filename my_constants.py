@@ -7,6 +7,7 @@ class Pokedata:
         self.personal_path = ''
         self.levelup_path = ''
         self.evolution_path = ''
+        self.egg_path = ''
 
         #file/game variables
         self.game = ''
@@ -15,6 +16,7 @@ class Pokedata:
         self.personal = []
         self.levelup = []
         self.evolution = []
+        self.egg = []
         
         self.tm_name_list = []
         self.hm_name_list = []
