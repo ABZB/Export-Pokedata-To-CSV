@@ -1,123 +1,71 @@
+from signal import pause
 from garc_handling import *
 from utilities import *
 from my_constants import *
 
-def export_levelup(move_edit_data, move_list, pokemon_list):
+def build_output_array(pokearray, base_index = 0, target_index = 0):
+    
+    #iterate over all files
+    index = target_index
 
-    #load levelup GARC
-    move_edit_data = choose_GARC(move_edit_data, 'Levelup', move_edit_data.game)
+    while True:
+        temp_array = []
+        #don't record index 0
+        if(index == 0):
+            continue
 
-    #choose output path for dump
-    save_path = asksaveasfilename(title='Save exported table of Level-Up Moves', defaultextension='.csv',filetypes= [('CSV','.csv')])
+        #get the local personal file
+        personal = pokearray.personal[index]
 
-    with open(save_path, 'w', newline = '', encoding='utf-8-sig') as csvfile:
-        writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
+        #Species/Forme Name
+        temp_array.append([index, 'Name',pokearray.pokemon_name_list])
 
-        #write the header line
-        writer_head.writerow (['Personal Index', 'Name', 'Level', 'Move'])
-
-        #iterate over all files
-        for index, file in enumerate(move_edit_data.levelup):
-            for entry_index in range(len(file)//4):
-                move_index = from_little_bytes_int(file[entry_index*4:entry_index*4 + 2])
-                level = file[entry_index*4 + 2]
-
-                #don't edit terminator
-                if(level == 0xFF and move_index == 0xFFFF):
-                    pass
-                else:
-                    try:
-                        writer_head.writerow ([index, pokemon_list[index], level, move_list[move_index]])
-                    except Exception as e:
-                        print(e)
-                        if(index >= len(pokemon_list)):
-                            print('You might be using the wrong generation, or have added additional Pokemon/formes. In the latter case, update the appropriate CSV.')
-                        if(move_index >= len(move_list)):
-                            print('You might have added additional moves, in that case, please add them in the appropriate place in move_list.csv')
-
-            #write blank line after every Pokemon for easy reading
-            writer_head.writerow (['', '', '', ''])
+        #check if has any alt formes. target index is 0 in main call
+        if(target_index == 0):
+            #check for alt formes
+            temp_index = from_little_bytes_int(personal[0x1C:0x1E])
             
-def import_levelup(move_edit_data, move_list, pokemon_list):
+            #if it's not 0, handle all of the alt formes now
+            if(temp_index != 0):
+                for forme_number in range(personal[0x20] - 1):
+                    pokearray = build_output_array(pokearray, index, temp_index + forme_number)
 
-    output_array = []
-
-    temp_array = []
-
-    #choose edited .csv
-    save_path = askopenfilename(title='Choose edited table of Level-Up Moves', defaultextension='.csv',filetypes= [('CSV','.csv')])
-
-    #load levelup GARC
-    move_edit_data = choose_GARC(move_edit_data, 'Levelup', move_edit_data.game)
-
-    #get data from csv individual binary files
-    with open(save_path, 'r', newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-
-        temp_array = list(reader_head)
-
-
-
-    #convert levelup move name to all lower case to ease search
-
-    for x in range(len(move_list)):
-        move_list[x] = move_list[x].lower()
-
-    #build the new set of binary files
-
-    last_personal = 0
-    temp_file = []
-    for line_number, line in enumerate(temp_array):
-        #no file for header or blank space
-        if(line[0] in {'','Personal Index'}):
-            pass
+        #Base Index
+        if(base_index == 0):
+            temp_array.append([index, 'Base Index',index])
         else:
-            #if went down, something is very wrong, abort
-            if(int(line[0]) < int(last_personal)):
-                print('Serious error at line', line_number + 1, 'index numbers out of order, please check the line, you might need to sort the .csv file by index number.')
+            temp_array.append([index, 'Base Index',base_index])
 
-            #if not-equal, starting next file
-            if(line[0] != last_personal):
-                #append terminator to previous file
-                temp_file.extend([0xFF, 0xFF, 0xFF, 0xFF])
-                #append current file to array
-                output_array.append(temp_file)
-                #clear temp
-                temp_file = []
-                #update last personal
-                last_personal = line[0]
+        #Stats
+        temp_array.append([index, stat_names[0], personal[0]])
+        temp_array.append([index, stat_names[1], personal[1]])
+        temp_array.append([index, stat_names[2], personal[2]])
+        temp_array.append([index, stat_names[3], personal[4]])
+        temp_array.append([index, stat_names[4], personal[5]])
+        temp_array.append([index, stat_names[5], personal[3]])
 
-            #get move index
-            try:
-                temp_index = move_list.index(line[3].lower())
-            except Exception as e:
-                print('Error at line', line_number + 1, 'Python error:', e)
-                try:
-                    print('Move entered as', line[3], 'not found. Please check spelling')
-                except Exception as e:
-                    print('Error 2:', e)
-                    print('Unable to access the entered move name, something is wrong.')
+        #Types
+        temp_array.append([index, 'Type 1', personal[6]])
+        temp_array.append([index, 'Type 2', personal[7]])
+        temp_array.append([index, 'Catch Rate', personal[8]])
 
-            #move index, low byte then high
-            temp_file.append(temp_index%0x100)
-            temp_file.append(temp_index >> 8)
-            #level
-            if(int(line[2]) < 0 or int(line[2]) > 100):
-                print('Warning, level at line', line_number,'is', line[2],'.\n')
-            temp_file.append(int(line[2]))
-            #unused
-            temp_file.append(0x00)
-    #final loop ends without appending last file, handle it now
-    temp_file.extend([0xFF, 0xFF, 0xFF, 0xFF])
-    output_array.append(temp_file)
+        #EVs
+        temp_array.append([index, stat_names[0] + ' EV', personal[0xa] & 3])
+        temp_array.append([index, stat_names[1] + ' EV', (personal[0xa] >> 2) & 3])
+        temp_array.append([index, stat_names[2] + ' EV', (personal[0xa] >> 4) & 3])
+        temp_array.append([index, stat_names[3] + ' EV', personal[0xb] & 3])
+        temp_array.append([index, stat_names[4] + ' EV', (personal[0xb] >> 2) & 3])
+        temp_array.append([index, stat_names[5] + ' EV', (personal[0xa] >> 6) & 3])
 
-    move_edit_data.levelup = output_array
-         
-   
+        #Items
+        temp_array.append([index, 'Item 50%', pokearray.item_name_list[from_little_bytes_int(personal[0x0C:0x0E])]])
+        temp_array.append([index, 'Item 5%', pokearray.item_name_list[from_little_bytes_int(personal[0x0E:0x10])]])
+        temp_array.append([index, 'Item 1%', pokearray.item_name_list[from_little_bytes_int(personal[0x10:0x12])]])
 
-    save_GARC(move_edit_data, 'levelup')
+        #Abilities
+        for x in range(3):
+            temp_array.append([index, 'Ability ' + str(x + 1), pokearray.ability_name_list[personal[0x18 + x]]])
 
-    return(move_edit_data)
 
 
 def main():
@@ -125,13 +73,15 @@ def main():
     action_choice = ''
     
     reference_directory = os.path.join(os.getcwd(),'config and data')
+    pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
     move_list_path = os.path.join(reference_directory, 'move_list.csv')
+    ability_list_path = os.path.join(reference_directory, 'ability_list.csv')
+    item_list_path = os.path.join(reference_directory, 'item_list.csv')
+    tm_list_path = os.path.join(reference_directory, 'tm_hm_special_tutor_list.csv')
 
     tutor_table_offset = 0
     tutor_table_raw = []
 
-    move_list = []
-    pokemon_list = []
 
     #get generation
     while True:
@@ -142,21 +92,6 @@ def main():
         else:
             print(temp, 'is not valid\n\n')
         
-    pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
-
-    #load move names
-    with open(move_list_path, newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-        
-        #load csv into an array      
-        temp = list(reader_head)
-
-        for line in temp:
-            if(line[1] != ''):
-                move_list.append(line[1])
-            else:
-                break
-    print('Loaded Move Name List')
 
 
     #load pokemon names
@@ -168,13 +103,117 @@ def main():
 
         for line in temp:
             if(line[1] != '' or line[0] == '0'):
-                pokemon_list.append(line[1])
+                pokearray.pokemon_name_list.append(line[1])
             else:
                 break
+
     print('Loaded Pokemon Name List')
 
+    #load move names
+    with open(move_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+
+        for line in temp:
+            if(line[1] != ''):
+                pokearray.move_name_list.append(line[1])
+            else:
+                break
+    print('Loaded Move Name List')
+
+    #load ability names
+    with open(ability_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+
+        for line in temp:
+            if(line[1] != ''):
+                pokearray.ability_name_list.append(line[1])
+            else:
+                break
+    print('Loaded Ability Name List')
+
+    #load item names
+    with open(item_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+
+        for line in temp:
+            if(line[1] != ''):
+                pokearray.item_name_list.append(line[1])
+            else:
+                break
+    print('Loaded Item Name List')
+
+
+
+
+
+
+
+
+
+    #load TM/HM/Special Tutor names
+    with open(tm_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+
+        for line in temp:
+            if(line[1] != ''):
+                if(line[0][0:2].upper() == 'TM'):
+                    pokearray.tm_list.append(line)
+                elif(line[0][0:2].upper() == 'HM'):
+                    pokearray.hm_list.append(line)
+                elif(line[0][0:2].upper() == 'SP'):
+                    pokearray.special_tutor_name_list.append(line)
+            else:
+                break
+    print('Loaded TM/HM/Special Tutor Move Name Lists')
+
+    
+    #Get ROM paths
+    
+    #path to folder
+    rom_path = askdirectory(title='Choose the extracted ROM folder')
+
+    #determine if using "ExtractedRomFS" or "romfs"
+    romfs_path = ''
+
+    if(os.path.isdir(os.path.join(rom_path, 'ExtractedRomFS'))):
+        romfs_path = os.path.join(rom_path, 'ExtractedRomFS/a')
+    elif(os.path.isdir(os.path.join(rom_path, 'romfs'))):
+        romfs_path = os.path.join(rom_path, 'romfs/a')
+    else:
+        print('Error: no subfolder named ExtractedRomFS or romfs')  
+        return
+
+
+    pokearray.personal_path = os.path.join(romfs_path, get_GARC_path('Personal', pokearray.game))
+    pokearray.evolution_path = os.path.join(romfs_path, get_GARC_path('Evolution', pokearray.game))
+    pokearray.levelup_path = os.path.join(romfs_path, get_GARC_path('Levelup', pokearray.game))
+
+    print('Now loading GARCs...')
+
+    #load garcs
+    load_GARC(pokearray, pokearray.personal_path, 'Personal')
+    load_GARC(pokearray, pokearray.evolution_path, 'Evolution')
+    load_GARC(pokearray, pokearray.levelup_path, 'Levelup')
+
+
+    print('GARCs Loaded')
+
+    print('Now loading BP Move Tutor Table')
+    
     #load data from config file
-    with open(os.path.join(reference_directory, 'other.csv'), newline = '', encoding='utf-8-sig') as csvfile:
+    with open(os.path.join(reference_directory, 'offsets.csv'), newline = '', encoding='utf-8-sig') as csvfile:
         reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
         #load csv into an array      
@@ -193,29 +232,53 @@ def main():
 
 
 
+    #determine if using "ExtractedExeFS" or "exefs"
+    exefs_path = ''
+
+    if(os.path.isdir(os.path.join(rom_path, 'ExtractedExeFS'))):
+        exefs_path = os.path.join(rom_path, 'ExtractedExeFS')
+    elif(os.path.isdir(os.path.join(rom_path, 'exefs'))):
+        exefs_path = os.path.join(rom_path, 'exefs')
+    else:
+        print('Error: no subfolder named ExtractedExeFS or exefs')  
+        return
+
+    #look for code.bin or .code.bin
+
+    code_file_path = ''
+
+
+    if(os.path.exists(os.path.join(exefs_path, 'code.bin'))):
+        code_file_path = os.path.join(exefs_path, 'code.bin')
+    elif(os.path.exists(os.path.join(exefs_path, '.code.bin'))):
+        code_file_path = os.path.join(exefs_path, '.code.bin')
+    else:
+        print('Error: no subfolder named ExtractedExeFS or exefs')  
+        return
 
 
 
+    #get entire file starting with offset
+    tutor_table_raw = binary_file_read_to_flag(code_file_path, offset = 0)
+
+    #every two bytes is a move
+    for line in range(len(tutor_table_raw)//2):
+        pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[from_little_bytes_int(line)])
+        
+    pokearray.write_array = []*(len(pokearray.personal))
 
 
-    while True:
+    pokearray.write_array = build_output_array(pokearray)
 
-        #choose extract or rebuild
-        while True:
-            temp = input('Extract or rebuild Level-Up GARC, or quit? (e/r/q)\n').lower()
-            if(temp in {'e', 'r', 'q'}):
-                action_choice = temp
-                break
-            else:
-                print(temp, 'is not valid\\nn')
+    
+    with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+        writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
 
-        match action_choice:
-            case 'e':
-                export_levelup(move_edit_data, move_list, pokemon_list)
-            case 'r':
-                import_levelup(move_edit_data, move_list, pokemon_list)
-            case 'q':
-                return
+        #write the header line
+        writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2', 'Data 3', 'Data 4'])
+
+
+
 
 
 main()
