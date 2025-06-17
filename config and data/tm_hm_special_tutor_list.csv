@@ -106,11 +106,11 @@ HM 005,
 HM 006,
 HM 007,
 HM 008,
-Special Tutor 1,Grass Pledge
-Special Tutor 1,Fire Pledge
-Special Tutor 1,Water Pledge
-Special Tutor 2,Frenzy Plant
-Special Tutor 2,Blast Burn
-Special Tutor 2,Hydro Cannon
-Special Tutor 3,Draco Meteor
-Special Tutor 4,Dragon Ascent
+Pledges,Grass Pledge
+Pledges,Fire Pledge
+Pledges,Water Pledge
+Ultimates,Frenzy Plant
+Ultimates,Blast Burn
+Ultimates,Hydro Cannon
+Draco Meteor,Draco Meteor
+Dragon Ascent,Dragon Ascent
