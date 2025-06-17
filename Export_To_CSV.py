@@ -144,6 +144,17 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
                     temp_array.append([index, 'TM/HM', pokearray.tm_name_list[bit_count][0], pokearray.tm_name_list[bit_count][1]])
                 bit_count += 1
 
+        #Special Tutors
+        bit_count = 0
+
+        #iterate through the bits of current byte
+        for bit_position in range(8):
+            #check if this bit is 1
+            if(personal[0x35] & (1 << bit_position) == 1):
+                #Index, TM/HM, Tutor Name, move name
+                temp_array.append([index, 'Move Tutor', pokearray.special_tutor_name_list[bit_count][0], pokearray.special_tutor_name_list[bit_count][1]])
+            bit_count += 1
+
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
