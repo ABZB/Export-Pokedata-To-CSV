@@ -131,6 +131,19 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
             else:
                 temp_array.append([index, 'Level Up', 'Evolve' if line[3] == 0 else line[3], pokearray.move_name_list[from_little_bytes_int(line[0:2])]])
             
+        #TM/HM 1-100, HM 1-8
+        bit_count = 0
+        for offset in range(14):
+            byte_value = personal[0x28 + offset]
+
+            #iterate through the bits of current byte
+            for bit_position in range(8):
+                #check if this bit is 1
+                if(byte_value & (1 << bit_position) == 1):
+                    #Index, TM/HM, [TM][HM] XXX, move name
+                    temp_array.append([index, 'TM/HM', pokearray.tm_name_list[bit_count][0], pokearray.tm_name_list[bit_count][1]])
+                bit_count += 1
+
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
