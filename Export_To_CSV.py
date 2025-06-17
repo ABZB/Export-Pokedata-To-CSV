@@ -208,7 +208,6 @@ def main():
     item_list_path = os.path.join(reference_directory, 'item_list.csv')
     tm_list_path = os.path.join(reference_directory, 'tm_hm_special_tutor_list.csv')
 
-    tutor_table_offset = 0
     tutor_table_raw = []
 
 
@@ -386,6 +385,9 @@ def main():
         return
 
 
+    if(pokearray.game in {'ORAS', 'USUM'}):
+        #get tutor table
+        tutor_table_raw = binary_file_read_to_flag(code_file_path, offset = tutor_table_offset)
 
     #get entire file starting with offset
     tutor_table_raw = binary_file_read_to_flag(code_file_path, offset = 0)
@@ -393,6 +395,9 @@ def main():
     #every two bytes is a move
     for line in range(len(tutor_table_raw)//2):
         pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[from_little_bytes_int(line)])
+        #every two bytes is a move
+        for line_number in range(len(tutor_table_raw)//2):
+            pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[from_little_bytes_int(tutor_table_raw[line_number:line_number + 2])])
         
     pokearray.write_array = []*(len(pokearray.personal))
 
