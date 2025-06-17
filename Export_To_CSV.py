@@ -20,7 +20,6 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
         personal = pokearray.personal[index]
 
 
-        print('Now compiling ' + str(index) + ': ' + pokearray.pokemon_name_list[index])
 
         #Species/Forme Name
         temp_array.append([index, 'Name',pokearray.pokemon_name_list[index]])
@@ -32,12 +31,13 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
 
             #if it's not 0, handle all of the alt formes now
             if(temp_index != 0):
-                for forme_number in range(personal[0x20] - 1):
-                    pokearray = build_output_array(pokearray, index, temp_index + forme_number, forme_number + 1)
+                for alt_forme_numbers in range(personal[0x20] - 1):
+                    pokearray = build_output_array(pokearray, index, temp_index + alt_forme_numbers, alt_forme_numbers + 1)
                 #this will ultimately find the personal file of the least-indexed alt forme, before it is reached, to handle exiting at the proper time
                 if(temp_index < least_alt_index):
                     least_alt_index = temp_index
-
+            
+        print('Now compiling ' + str(index) + ': ' + pokearray.pokemon_name_list[index])
         #Base Index
         if(base_index == 0):
             temp_array.append([index, 'Base Index',index])
@@ -149,7 +149,10 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                 #check if this bit is 1
                 if(byte_value & (1 << bit_position) == (1 << bit_position)):
                     #Index, TM/HM, [TM][HM] XXX, move name
-                    temp_array.append([index, 'TM/HM', pokearray.tm_name_list[bit_count][0], pokearray.tm_name_list[bit_count][1]])
+                    try:
+                        temp_array.append([index, 'TM/HM', pokearray.tm_name_list[bit_count][0], pokearray.tm_name_list[bit_count][1]])
+                    except:
+                        pass
                 bit_count += 1
 
         #Special Tutors
@@ -231,7 +234,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
 
 
 
-        #Evolve-From
+        #Evolve From
 
         #0x0 - Evolution type
         #0x1 - unused
@@ -244,7 +247,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
         #0x6 - Target forme (FF is preserve current)
         #0x7 - Level (0 is "NA")
 
-            #set values depending on generation
+        #set values depending on generation
         line_length = 6 if pokearray.game in ('XY', 'ORAS') else 8
         for index_number, file in enumerate(pokearray.evolution):
             for offset in range(0, 8*line_length, line_length):
@@ -252,19 +255,18 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                 
                 method = file[offset]
 
-
+                
+                evolve_from_index = index_number
                 found_one = False
                 #exit this for loop if we have an empty entry
                 if(evolve_to_index == 0):
                     break
-
-
                 #evolves to us given match in species in following cases:
                 #Target is forme 1, has evo method 34
                 #gen 7 and byte 6 matches target forme
                 #target and source have same forme and either is gen 6 or byte 0x6 is -1
                 #Shedinja is special, the listed Pokemon in the GARC is only Ninjask, Shedinja is generated automatically
-                elif(evolve_to_index == max(index, base_index) or (max(index, base_index) == 292 and method in {0xE, 0xF})):
+                elif((evolve_to_index == index) or (evolve_to_index == base_index) or (max(index, base_index) == 292 and method in {0xE, 0xF})):
                     if(forme_number == 1 and method == 0x22):
                         found_one = True
                     if(pokearray.game in {'SM', 'USUM'}):
@@ -273,14 +275,21 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                             found_one = True
                     #get source forme
                     temp_pointer = from_little_bytes_int(pokearray.personal[index_number][0x1C:0x1E])
-                    #if alt formes, then forme # is the difference between the index number (personal file number) and the first alt forme, plus 1 (as if they are equal it should be 1)
-                    source_forme = (index_number - temp_pointer + 1) if (temp_pointer != 0) else 0
+                    source_forme = 0
+                    
+                    if(index_number >= temp_pointer and temp_pointer != 0):
+                        source_forme = index_number - temp_pointer + 1
+                        #find the base forme's index
+                        for x in range(1, temp_pointer, 1):
+                            if(from_little_bytes_int(pokearray.personal[x][0x1C:0x1E]) == temp_pointer):
+                                evolve_from_index = x
+                                break
+
 
                     if(source_forme == forme_number):
                         if(pokearray.game in {'XY', 'ORAS'}):
                             found_one = True
-                        else:
-                            if(0xFF == file[offset + 0x6]):
+                        elif(0xFF == file[offset + 0x6]):
                                 found_one = True
                 if(found_one):
                     pass
@@ -316,9 +325,9 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                         level_phrase = ', and being at least Level ' + str(file[offset + 7])
 
 
-                output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[index_number] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase + '.'
+                output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[evolve_from_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
 
-                temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[index_number], output_phrase])
+                temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[evolve_from_index], output_phrase])
 
         #Evolve to
         file = pokearray.evolution[index]
@@ -380,7 +389,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                     level_phrase = ', and being at least Level ' + str(file[offset + 7])
 
 
-            output_phrase = 'Evolves to ' + pokearray.pokemon_name_list[evo_target_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase + '.'
+            output_phrase = 'Evolves to ' + pokearray.pokemon_name_list[evo_target_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
 
             temp_array.append([index, 'Evolves To', pokearray.pokemon_name_list[evo_target_index], output_phrase])
 
@@ -474,14 +483,6 @@ def main():
             else:
                 break
     print('Loaded Item Name List')
-
-
-
-
-
-
-
-
 
     #load TM/HM/Special Tutor names
     with open(tm_list_path, newline = '', encoding='utf-8-sig') as csvfile:
@@ -591,18 +592,21 @@ def main():
 
     pokearray = build_output_array(pokearray)
 
-    
-    with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
-        writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
+    while True:
+        try:
+            with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+                writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
 
-        #write the header line
-        writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2'])
+                #write the header line
+                writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2'])
 
-        for entry in pokearray.write_array:
-            for row in entry:
-                writer_head.writerow(row)
-            writer_head.writerow(['', '', '', ''])
-
+                for entry in pokearray.write_array:
+                    for row in entry:
+                        writer_head.writerow(row)
+                    writer_head.writerow(['', '', '', ''])
+            break
+        except Exception as e:
+            print(e)
 
 
 
