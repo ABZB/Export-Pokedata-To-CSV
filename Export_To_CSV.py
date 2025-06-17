@@ -169,9 +169,9 @@ def main():
         for line in temp:
             if(line[1] != ''):
                 if(line[0][0:2].upper() == 'TM'):
-                    pokearray.tm_list.append(line)
+                    pokearray.tm_name_list.append(line)
                 elif(line[0][0:2].upper() == 'HM'):
-                    pokearray.hm_list.append(line)
+                    pokearray.hm_name_list.append(line)
                 elif(line[0][0:2].upper() == 'SP'):
                     pokearray.special_tutor_name_list.append(line)
             else:
