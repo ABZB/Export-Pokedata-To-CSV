@@ -199,7 +199,6 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
 
 def main():
     pokearray = Pokedata()
-    action_choice = ''
     
     reference_directory = os.path.join(os.getcwd(),'config and data')
     pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
