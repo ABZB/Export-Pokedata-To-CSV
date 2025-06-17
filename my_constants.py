@@ -7,44 +7,34 @@ class Pokedata:
         self.personal_path = ''
         self.levelup_path = ''
         self.evolution_path = ''
-        self.model_path = ''
-        self.csv_pokemon_list_path = ''
 
         #file/game variables
         self.game = ''
         self.max_species_index = 0
+
         self.personal = []
-
         self.levelup = []
-
         self.evolution = []
-
-        self.model = []
-        self.model_header = []
-
-        self.modelless_exists = True
-        self.model_folder_prefix = ''
-
-        self.run_model_later = False
-
-        self.sorted = False
-
-        #on startup, initialize to empty
-        #when load, initialize to full and current to full
-        #when search, search in current for speed
-        self.base_species_list =  ['Bulbasaur']
-        self.master_formes_list = ['Bulbasaur']
-        self.model_source_list = ['Bulbasaur']
-
-        self.master_list_csv = []
         
-        self.extracted_extension = '.bin'
+        self.tm_name_list = []
+        self.hm_name_list = []
+        self.special_tutor_name_list = []
+
+        self.bp_tutor_move_name_list = []
+        
+        self.pokemon_name_list = []
+        self.move_name_list = []
+        self.ability_name_list = []
+        self.item_name_list = []
+
+        self.write_array = []
 
 
-xy_master_list_csv = []
 
-oras_master_list_csv = []
+type_list = ['Normal','Fighting','Flying','Poison','Ground','Rock','Bug','Ghost','Steel','Fire','Water','Grass','Electric','Psychic','Ice','Dragon','Dark','Fairy']
+egg_group_list = ['','Monster','Water 1 (Amphibious)','Bug','Flying','Field','Fairy','Grass','Humanoid','Water 3 (Aquatic Invertebrate)','Mineral','Amorphous','Water 2 (Piscine)','Ditto','Dragon','Undiscovered',]
+color_list = ['Red','Blue','Yellow','Green','Black','Brown','Purple','Gray','White','Pink','','','','','','','','']
 
-sm_master_list_csv = []
+stat_names = ['HP', 'Attack', 'Defense', 'Special Attack', 'Special Defense', 'Speed']
 
-usum_master_list_csv = []
+
