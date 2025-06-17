@@ -67,6 +67,15 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
             temp_array.append([index, 'Ability ' + str(x + 1), pokearray.ability_name_list[personal[0x18 + x]]])
 
 
+        #put the fully built pokemon output thing into its place
+        pokearray.write_array[index] = temp_array
+
+        #Check if in a subcall for alt forme or if added final non-alt forme (alt formes of that base forme were branched to above)
+        if(base_index != 0 or (index == least_alt_index - 1)):
+            return(pokearray)
+        #otherwise increment index by 1 and do next loop
+        else:
+            index += 1
 
 def main():
     pokearray = Pokedata()
