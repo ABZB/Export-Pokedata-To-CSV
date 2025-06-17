@@ -223,6 +223,65 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
 
 
 
+        #Evolve-From
+
+        #0x0 - Evolution type
+        #0x1 - unused
+        #0x2 - other parameter low byte
+        #0x3 - other parameter high byte
+        #0x4 - target species low byte
+        #0x5 - target species high byte
+        
+        #Gen 7 only
+        #0x6 - Target forme (FF is preserve current)
+        #0x7 - Level (0 is "NA")
+
+            #set values depending on generation
+        line_length = 6 if pokearray.game in ('XY', 'ORAS') else 8
+        for index_number, file in enumerate(pokearray.evolution):
+            for offset in range(0, 8*line_length, line_length):
+                evolve_to_index = from_little_bytes_int(file[offset + 4:offset + 6])
+                
+                #exit this for loop if we have an empty entry
+                if(evolve_to_index == 0):
+                    break
+
+
+                #evolves to us given match in species in following cases:
+                #Target is forme 1, has evo method 34
+                #gen 7 and byte 6 matches target forme
+                #target and source have same forme and either is gen 6 or byte 0x6 is -1
+                elif(evolve_to_index == max(index, base_index)):
+                    method = file[offset]
+                    if(forme_number == 1 and method == 0x22):
+                        pass
+                    else:
+                        if(pokearray.game in {'SM', 'USUM'}):
+                            #get target forme byte
+                            if(forme_number == file[offset + 0x6]):
+                                pass
+                        else:
+                            #get source forme
+                            temp_pointer = from_little_bytes_int(pokearray.personal[index_number][0x1C:0x1E])
+                            #if alt formes, then forme # is the difference between the index number (personal file number) and the first alt forme, plus 1 (as if they are equal it should be 1)
+                            source_forme = (index_number - temp_pointer + 1) if (temp_pointer != 0) else 0
+
+                            if(source_forme == forme_number):
+                                if(pokearray.game in {'XY', 'ORAS'}):
+                                    pass
+                                else:
+                                    if(0xFF == file[offset + 0x6]):
+                                        pass
+                                    else:
+                                        continue
+                            else:
+                                continue
+
+
+
+
+
+
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
 

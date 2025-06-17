@@ -4,3 +4,9 @@
 ~$Layout of Report.xlsx
 *.sqlite
 *.json
+*.db-wal
+*.db-shm
+*.db
+.vs/Export-Pokedata-To-CSV/v17/.suo
+.vs/Export-Pokedata-To-CSV/v17/DocumentLayout.backup.json
+.vs/Export-Pokedata-To-CSV/v17/DocumentLayout.json
