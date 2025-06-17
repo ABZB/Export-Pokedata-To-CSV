@@ -122,6 +122,15 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
                 temp_array.append([index, 'Z-Move', pokearray.move_name_list[from_little_bytes_int(personal[0x50:0x52])]])
 
 
+        #Level up moves
+        current_personal = pokearray.levelup[index]
+        #each entry in level up is 4 bytes
+        for line in range(len(current_personal)//4):
+            if(line[4] == 0xFF):
+                pass
+            else:
+                temp_array.append([index, 'Level Up', 'Evolve' if line[3] == 0 else line[3], pokearray.move_name_list[from_little_bytes_int(line[0:2])]])
+            
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
