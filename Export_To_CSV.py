@@ -1,31 +1,35 @@
-from signal import pause
 from garc_handling import *
 from utilities import *
 from my_constants import *
 
 def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
-    
+
     #iterate over all files
     index = target_index
     least_alt_index = 0xFFFF
+
 
     while True:
         temp_array = []
         #don't record index 0
         if(index == 0):
+            index += 1
             continue
 
         #get the local personal file
         personal = pokearray.personal[index]
 
+
+        print('Now compiling ' + str(index) + ': ' + pokearray.pokemon_name_list[index])
+
         #Species/Forme Name
-        temp_array.append([index, 'Name',pokearray.pokemon_name_list])
+        temp_array.append([index, 'Name',pokearray.pokemon_name_list[index]])
 
         #check if has any alt formes. target index is 0 in main call
         if(target_index == 0):
             #check for alt formes
             temp_index = from_little_bytes_int(personal[0x1C:0x1E])
-            
+
             #if it's not 0, handle all of the alt formes now
             if(temp_index != 0):
                 for forme_number in range(personal[0x20] - 1):
@@ -49,8 +53,11 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
         temp_array.append([index, stat_names[5], personal[3]])
 
         #Types
-        temp_array.append([index, 'Type 1', personal[6]])
-        temp_array.append([index, 'Type 2', personal[7]])
+        temp_array.append([index, 'Type 1', pokemon_types[personal[6]]])
+        if(personal[6] ==  personal[7]):
+            temp_array.append([index, 'Type 2', ''])
+        else:
+            temp_array.append([index, 'Type 2', pokemon_types[personal[7]]])
         temp_array.append([index, 'Catch Rate', personal[8]])
 
         #EVs
@@ -75,7 +82,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
             temp_array.append([index, 'Egg Group ' + str(x + 1), egg_group_list[personal[0x16 + x]]])
 
         #Color
-        temp_array.append([index, 'Color', color_list[[personal[0x18 + x]]]])
+        temp_array.append([index, 'Color', color_list[0xF & personal[0x21]]])
 
         #Gender Ratio
         gender_report = ''
@@ -125,11 +132,12 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
         #Level up moves
         current_personal = pokearray.levelup[index]
         #each entry in level up is 4 bytes
-        for line in range(len(current_personal)//4):
-            if(line[4] == 0xFF):
+        for line_offset in range(0, len(current_personal), 4):
+
+            if(current_personal[line_offset + 2] == 0xFF):
                 pass
             else:
-                temp_array.append([index, 'Level Up', 'Evolve' if line[3] == 0 else line[3], pokearray.move_name_list[from_little_bytes_int(line[0:2])]])
+                temp_array.append([index, 'Level Up', 'Evolve' if current_personal[line_offset + 2] == 0 else current_personal[line_offset + 2], pokearray.move_name_list[from_little_bytes_int(current_personal[line_offset:line_offset + 2])]])
             
         #TM/HM 1-100, HM 1-8
         bit_count = 0
@@ -139,7 +147,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
             #iterate through the bits of current byte
             for bit_position in range(8):
                 #check if this bit is 1
-                if(byte_value & (1 << bit_position) == 1):
+                if(byte_value & (1 << bit_position) == (1 << bit_position)):
                     #Index, TM/HM, [TM][HM] XXX, move name
                     temp_array.append([index, 'TM/HM', pokearray.tm_name_list[bit_count][0], pokearray.tm_name_list[bit_count][1]])
                 bit_count += 1
@@ -150,7 +158,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
         #iterate through the bits of current byte
         for bit_position in range(8):
             #check if this bit is 1
-            if(personal[0x35] & (1 << bit_position) == 1):
+            if(personal[0x35] & (1 << bit_position) == (1 << bit_position)):
                 #Index, TM/HM, Tutor Name, move name
                 temp_array.append([index, 'Move Tutor', pokearray.special_tutor_name_list[bit_count][0], pokearray.special_tutor_name_list[bit_count][1]])
             bit_count += 1
@@ -166,7 +174,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                 #iterate through the bits of current byte
                 for bit_position in range(8):
                     #check if this bit is 1
-                    if(byte_value & (1 << bit_position) == 1):
+                    if(byte_value & (1 << bit_position) == (1 << bit_position)):
                         #Index, Move Tutor, Tutor #, move name
                         temp_array.append([index, 'Move Tutor', 1 if bit_count <= 15 else 2 if bit_count <= 31 else 3 if bit_count <= 48 else 4, pokearray.bp_tutor_move_name_list[bit_count]])
                     bit_count += 1
@@ -181,7 +189,7 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                 #iterate through the bits of current byte
                 for bit_position in range(8):
                     #check if this bit is 1
-                    if(byte_value & (1 << bit_position) == 1):
+                    if(byte_value & (1 << bit_position) == (1 << bit_position)):
                         #Index, TM/HM, [TM][HM] XXX, move name
                         temp_array.append([index, 'Move Tutor', 'Big Wave Beach' if bit_count <= 15 else 'Heahea Beach' if bit_count <= 31 else "Ula'ula Beach" if bit_count <= 48 else 'Battle Tree', pokearray.bp_tutor_move_name_list[bit_count]])
                     bit_count += 1
@@ -217,8 +225,8 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
             pass
         else:
             #each move is 2 bytes. in XY/ORAS first two bytes are count of egg moves. In SM/USUM before those bytes are the pointer to the alt forme egg move file
-            for x in range(len(pokearray.egg[egg_index])//2 - (1 if pokearray.game in {'XY', 'ORAS'} else 2)):
-                temp_array.append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x + (2 if pokearray.game in {'XY', 'ORAS'} else 4):x + (2 if pokearray.game in {'XY', 'ORAS'} else 4) + 2])]])
+            for x in range((2 if pokearray.game in {'XY', 'ORAS'} else 4), len(pokearray.egg[egg_index]), 2):
+                temp_array.append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
 
 
 
@@ -242,6 +250,10 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
             for offset in range(0, 8*line_length, line_length):
                 evolve_to_index = from_little_bytes_int(file[offset + 4:offset + 6])
                 
+                method = file[offset]
+
+
+                found_one = False
                 #exit this for loop if we have an empty entry
                 if(evolve_to_index == 0):
                     break
@@ -251,36 +263,126 @@ def build_output_array(pokearray, base_index = 0, target_index = 0, forme_number
                 #Target is forme 1, has evo method 34
                 #gen 7 and byte 6 matches target forme
                 #target and source have same forme and either is gen 6 or byte 0x6 is -1
-                elif(evolve_to_index == max(index, base_index)):
-                    method = file[offset]
+                #Shedinja is special, the listed Pokemon in the GARC is only Ninjask, Shedinja is generated automatically
+                elif(evolve_to_index == max(index, base_index) or (max(index, base_index) == 292 and method in {0xE, 0xF})):
                     if(forme_number == 1 and method == 0x22):
-                        pass
-                    else:
-                        if(pokearray.game in {'SM', 'USUM'}):
-                            #get target forme byte
-                            if(forme_number == file[offset + 0x6]):
-                                pass
+                        found_one = True
+                    if(pokearray.game in {'SM', 'USUM'}):
+                        #get target forme byte
+                        if(forme_number == file[offset + 0x6]):
+                            found_one = True
+                    #get source forme
+                    temp_pointer = from_little_bytes_int(pokearray.personal[index_number][0x1C:0x1E])
+                    #if alt formes, then forme # is the difference between the index number (personal file number) and the first alt forme, plus 1 (as if they are equal it should be 1)
+                    source_forme = (index_number - temp_pointer + 1) if (temp_pointer != 0) else 0
+
+                    if(source_forme == forme_number):
+                        if(pokearray.game in {'XY', 'ORAS'}):
+                            found_one = True
                         else:
-                            #get source forme
-                            temp_pointer = from_little_bytes_int(pokearray.personal[index_number][0x1C:0x1E])
-                            #if alt formes, then forme # is the difference between the index number (personal file number) and the first alt forme, plus 1 (as if they are equal it should be 1)
-                            source_forme = (index_number - temp_pointer + 1) if (temp_pointer != 0) else 0
+                            if(0xFF == file[offset + 0x6]):
+                                found_one = True
+                if(found_one):
+                    pass
+                else:
+                    continue
+                #write evolves from line
+                #index, "Evolves From", source name, long description
 
-                            if(source_forme == forme_number):
-                                if(pokearray.game in {'XY', 'ORAS'}):
-                                    pass
-                                else:
-                                    if(0xFF == file[offset + 0x6]):
-                                        pass
-                                    else:
-                                        continue
-                            else:
-                                continue
+                parameter_phrase = ''
+                level_phrase = ''
+                parameter_index = from_little_bytes_int(file[offset + 2:offset + 4])
 
 
+                match evolution_parameter_types[method]:
+                    case '':
+                        pass
+                    case 'item':
+                        parameter_phrase = pokearray.item_name_list[parameter_index]
+                    case 'move':
+                        parameter_phrase = pokearray.move_name_list[parameter_index]
+                    case 'pokemon':
+                        parameter_phrase = pokearray.pokemon_name_list[parameter_index]
+                    case 'beauty':
+                        parameter_phrase = str(parameter_index)
+                    case _:
+                        parameter_phrase = pokemon_types[parameter_index] + '-Type Move' if evolution_parameter_types[method] == 'type-move' else '-Type Pokemon'
 
 
+                if(pokearray.game in {'XY', 'ORAS'} and evolution_parameter_types[method] == '' and parameter_index != 0):
+                    level_phrase = ', and being at least Level ' + str(parameter_index)
+                elif(pokearray.game in {'SM', 'USUM'}):
+                    if(file[offset + 7] != 0):
+                        level_phrase = ', and being at least Level ' + str(file[offset + 7])
 
+
+                output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[index_number] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase + '.'
+
+                temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[index_number], output_phrase])
+
+        #Evolve to
+        file = pokearray.evolution[index]
+        for offset in range(0, 8*line_length, line_length):
+            evolve_to_index = from_little_bytes_int(file[offset + 4:offset + 6])
+                
+
+            #exit this for loop if we have an empty entry
+            if(evolve_to_index == 0):
+                break
+            #write evolves from line
+            #index, "Evolves From", source name, long description
+
+            parameter_phrase = ''
+            level_phrase = ''
+            parameter_index = from_little_bytes_int(file[offset + 2:offset + 4])
+
+            
+            method = file[offset]
+
+            #get real Personal number 
+            #first get target forme number
+            target_forme = 0
+            #in gen 6, it's either 1 for meowstic special method, or matches current forme
+            if(method == 0x22):
+                target_forme = 1
+            elif(pokearray.game in {'XY', 'ORAS'}):
+                target_forme = forme_number
+            elif(file[offset + 0x6] == 0xFF):
+                target_forme = forme_number
+            else:
+                target_forme = file[offset + 0x6]
+
+            #get evolve-to forme pointer
+            if(target_forme != 0):
+                evo_target_index = from_little_bytes_int(pokearray.personal[evolve_to_index][0x1C:0x1E]) + target_forme - 1
+            else:
+                evo_target_index = evolve_to_index
+
+            match evolution_parameter_types[method]:
+                case '':
+                    pass
+                case 'item':
+                    parameter_phrase = pokearray.item_name_list[parameter_index]
+                case 'move':
+                    parameter_phrase = pokearray.move_name_list[parameter_index]
+                case 'pokemon':
+                    parameter_phrase = pokearray.pokemon_name_list[parameter_index]
+                case 'beauty':
+                    parameter_phrase = str(parameter_index)
+                case _:
+                    parameter_phrase = pokemon_types[parameter_index] + '-Type Move' if evolution_parameter_types[method] == 'type-move' else '-Type Pokemon'
+
+
+            if(pokearray.game in {'XY', 'ORAS'} and evolution_parameter_types[method] == '' and parameter_index != 0):
+                level_phrase = ', and being at least Level ' + str(parameter_index)
+            elif(pokearray.game in {'SM', 'USUM'}):
+                if(file[offset + 7] != 0):
+                    level_phrase = ', and being at least Level ' + str(file[offset + 7])
+
+
+            output_phrase = 'Evolves to ' + pokearray.pokemon_name_list[evo_target_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase + '.'
+
+            temp_array.append([index, 'Evolves To', pokearray.pokemon_name_list[evo_target_index], output_phrase])
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
@@ -296,7 +398,6 @@ def main():
     pokearray = Pokedata()
     
     reference_directory = os.path.join(os.getcwd(),'config and data')
-    pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
     move_list_path = os.path.join(reference_directory, 'move_list.csv')
     ability_list_path = os.path.join(reference_directory, 'ability_list.csv')
     item_list_path = os.path.join(reference_directory, 'item_list.csv')
@@ -307,14 +408,15 @@ def main():
 
     #get generation
     while True:
-        temp = input('Enter Generation, (XY, ORAS, SM, USUM)\n').upper()
+        temp = input('Enter Game, (XY, ORAS, SM, USUM)\n').upper()
         if(temp in {'XY', 'ORAS', 'SM', 'USUM'}):
             pokearray.game = temp
             break
         else:
             print(temp, 'is not valid\n\n')
         
-
+    
+    pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
 
     #load pokemon names
     with open(pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
@@ -390,14 +492,10 @@ def main():
 
         for line in temp:
             if(line[1] != ''):
-                if(line[0][0:2].upper() == 'TM'):
+                if(line[0][0:2].upper() in {'TM', "HM"}):
                     pokearray.tm_name_list.append(line)
-                elif(line[0][0:2].upper() == 'HM'):
-                    pokearray.hm_name_list.append(line)
-                elif(line[0][0:2].upper() == 'SP'):
+                else:
                     pokearray.special_tutor_name_list.append(line)
-            else:
-                break
     print('Loaded TM/HM/Special Tutor Move Name Lists')
 
     
@@ -421,7 +519,7 @@ def main():
     pokearray.personal_path = os.path.join(romfs_path, get_GARC_path('Personal', pokearray.game))
     pokearray.evolution_path = os.path.join(romfs_path, get_GARC_path('Evolution', pokearray.game))
     pokearray.levelup_path = os.path.join(romfs_path, get_GARC_path('Levelup', pokearray.game))
-    pokearray.egg_path = os.path.join(romfs_path, get_GARC_path('Levelup', pokearray.game))
+    pokearray.egg_path = os.path.join(romfs_path, get_GARC_path('Egg', pokearray.game))
 
     print('Now loading GARCs...')
 
@@ -434,73 +532,76 @@ def main():
 
     print('GARCs Loaded')
 
-    print('Now loading BP Move Tutor Table')
-    
-    #load data from config file
-    with open(os.path.join(reference_directory, 'offsets.csv'), newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-        
-        #load csv into an array      
-        temp = list(reader_head)
-
-        #move tutor line
-        match pokearray.game:
-            case 'XY':
-                tutor_table_offset = temp[1][1]
-            case 'ORAS':
-                tutor_table_offset = temp[1][2]
-            case 'SM':
-                tutor_table_offset = temp[1][3]
-            case 'USUM':
-                tutor_table_offset = temp[1][4]
-
-
-
-    #determine if using "ExtractedExeFS" or "exefs"
-    exefs_path = ''
-
-    if(os.path.isdir(os.path.join(rom_path, 'ExtractedExeFS'))):
-        exefs_path = os.path.join(rom_path, 'ExtractedExeFS')
-    elif(os.path.isdir(os.path.join(rom_path, 'exefs'))):
-        exefs_path = os.path.join(rom_path, 'exefs')
-    else:
-        print('Error: no subfolder named ExtractedExeFS or exefs')  
-        return
-
-    #look for code.bin or .code.bin
-
-    code_file_path = ''
-
-
-    if(os.path.exists(os.path.join(exefs_path, 'code.bin'))):
-        code_file_path = os.path.join(exefs_path, 'code.bin')
-    elif(os.path.exists(os.path.join(exefs_path, '.code.bin'))):
-        code_file_path = os.path.join(exefs_path, '.code.bin')
-    else:
-        print('Error: no subfolder named ExtractedExeFS or exefs')  
-        return
-
-
     if(pokearray.game in {'ORAS', 'USUM'}):
-        #get tutor table
-        tutor_table_raw = binary_file_read_to_flag(code_file_path, offset = tutor_table_offset)
-
-        #every two bytes is a move
-        for line_number in range(len(tutor_table_raw)//2):
-            pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[from_little_bytes_int(tutor_table_raw[line_number:line_number + 2])])
+        print('Now loading BP Move Tutor Table')
+    
+        #load data from config file
+        with open(os.path.join(reference_directory, 'offsets.csv'), newline = '', encoding='utf-8-sig') as csvfile:
+            reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
-    pokearray.write_array = []*(len(pokearray.personal))
+            #load csv into an array      
+            temp = list(reader_head)
+
+            #move tutor line
+            match pokearray.game:
+                case 'XY':
+                    tutor_table_offset = temp[1][1]
+                case 'ORAS':
+                    tutor_table_offset = temp[1][2]
+                case 'SM':
+                    tutor_table_offset = temp[1][3]
+                case 'USUM':
+                    tutor_table_offset = temp[1][4]
 
 
-    pokearray.write_array = build_output_array(pokearray)
+
+        #determine if using "ExtractedExeFS" or "exefs"
+        exefs_path = ''
+
+        if(os.path.isdir(os.path.join(rom_path, 'ExtractedExeFS'))):
+            exefs_path = os.path.join(rom_path, 'ExtractedExeFS')
+        elif(os.path.isdir(os.path.join(rom_path, 'exefs'))):
+            exefs_path = os.path.join(rom_path, 'exefs')
+        else:
+            print('Error: no subfolder named ExtractedExeFS or exefs')  
+            return
+
+        #look for code.bin or .code.bin
+
+        code_file_path = ''
+
+
+        if(os.path.exists(os.path.join(exefs_path, 'code.bin'))):
+            code_file_path = os.path.join(exefs_path, 'code.bin')
+        elif(os.path.exists(os.path.join(exefs_path, '.code.bin'))):
+            code_file_path = os.path.join(exefs_path, '.code.bin')
+        else:
+            print('Error: no subfolder named ExtractedExeFS or exefs')  
+            return
+
+
+        #get tutor table
+        tutor_table_raw = convert_bytes_to_ntuples(binary_file_read_to_flag(code_file_path, offset = tutor_table_offset), 2)
+        
+        #every two bytes is a move
+        for x in tutor_table_raw:
+            pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[x])
+
+    pokearray.write_array = [[]]*(len(pokearray.personal))
+
+    pokearray = build_output_array(pokearray)
 
     
     with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
         writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
 
         #write the header line
-        writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2', 'Data 3', 'Data 4'])
+        writer_head.writerow (['Personal Index', 'Field', 'Data 1', 'Data 2'])
 
+        for entry in pokearray.write_array:
+            for row in entry:
+                writer_head.writerow(row)
+            writer_head.writerow(['', '', '', ''])
 
 
 

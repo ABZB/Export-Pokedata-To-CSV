@@ -1,4 +1,5 @@
 import csv
+from os import read
 from tkinter.filedialog import askdirectory, asksaveasfilename, askopenfilename
 from utilities import *
 
@@ -12,22 +13,18 @@ def binary_file_to_array(file_path, offset = 0, read_length = 0):
 
         #go to the specified offset
         f.seek(offset, 0)
-
-        #in this case, reading whole file from offset
         if(read_length == 0):
             read_length = file_end - offset
-
         return(list(f.read(read_length)))
 
 def binary_file_read_to_flag(file_path, offset = 0):
-
+    offset = int(offset, 16)
     with open(file_path, "r+b") as f:
         x = 0
         while True:
             #go to the start offset plus x
             f.seek(offset + x, 0)
 
-            
             #get the three bytes starting from location
             halfword = f.read(3)
 

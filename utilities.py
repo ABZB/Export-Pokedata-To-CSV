@@ -124,3 +124,16 @@ def sort_table_personal_files(to_sort_table):
         order_table.append(x)
         
     return(order_table)
+
+
+def convert_bytes_to_ntuples(byte_table, length):
+    if(len(byte_table) % length != 0):
+        print('Error!!')
+        print('Below table has ' + str(len(byte_table)) + ' bytes, which is not divisible by ' + str(length))
+        print(byte_table)
+        return
+
+    temp = []
+    for x in range(0, len(byte_table), length):
+        temp.append(from_little_bytes_int(byte_table[x:x + length]))
+    return(temp)
