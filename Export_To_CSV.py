@@ -30,6 +30,9 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
             if(temp_index != 0):
                 for forme_number in range(personal[0x20] - 1):
                     pokearray = build_output_array(pokearray, index, temp_index + forme_number)
+                #this will ultimately find the personal file of the least-indexed alt forme, before it is reached, to handle exiting at the proper time
+                if(temp_index < least_alt_index):
+                    least_alt_index = temp_index
 
         #Base Index
         if(base_index == 0):
