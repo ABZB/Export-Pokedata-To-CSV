@@ -70,6 +70,45 @@ def build_output_array(pokearray, base_index = 0, target_index = 0):
         for x in range(3):
             temp_array.append([index, 'Ability ' + str(x + 1), pokearray.ability_name_list[personal[0x18 + x]]])
 
+        #Egg Groups
+        for x in range(2):
+            temp_array.append([index, 'Egg Group ' + str(x + 1), egg_group_list[personal[0x16 + x]]])
+
+        #Color
+        temp_array.append([index, 'Color', color_list[[personal[0x18 + x]]]])
+
+        #Gender Ratio
+        gender_report = ''
+        match personal[0x12]:
+            case 255:
+                gender_report = 'Other'
+            case 254:
+                gender_report = '100% Female'
+            case 0:
+                gender_report = '100% Male'
+            case _:
+                per_female = int(100*personal[0x12]/255)
+                gender_report = str(100 - per_female) + '% Male/' + str(per_female) + '% Female'
+        temp_array.append([index, 'Gender Ratio', gender_report])
+
+        #Friendship
+        temp_array.append([index, 'Base Friendship', personal[0x14]])
+
+        #Level Curve
+        temp_array.append([index, 'Level Curve', level_curve_list[personal[0x15]]])
+
+        #Base Exp
+        temp_array.append([index, 'Base Experience', from_little_bytes_int(personal[0x22:0x24])])
+
+        #Hatch Cycle
+        temp_array.append([index, 'Hatch Cycles', personal[0x13]])
+
+        #Height (decimeters)
+        temp_array.append([index, 'Height', from_little_bytes_int(personal[0x24:0x26])])
+
+        #Weight (decimeters)
+        temp_array.append([index, 'Weight', from_little_bytes_int(personal[0x24:0x26])])
+        
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
