@@ -437,7 +437,7 @@ def build_summary_output_array(pokearray):
         #BST
         bst = 0
         for x in range(6):
-            bst += personal[3]
+            bst += personal[x]
 
         abst = bst - min(personal[1], personal[4])
         temp_array.append(bst)
