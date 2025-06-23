@@ -319,10 +319,10 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
 
 
                 if(pokearray.game in {'XY', 'ORAS'} and evolution_parameter_types[method] == '' and parameter_index != 0):
-                    level_phrase = ', and being at least Level ' + str(parameter_index)
+                    level_phrase = ', while at least Level ' + str(parameter_index)
                 elif(pokearray.game in {'SM', 'USUM'}):
                     if(file[offset + 7] != 0):
-                        level_phrase = ', and being at least Level ' + str(file[offset + 7])
+                        level_phrase = ', while at least Level ' + str(file[offset + 7])
 
 
                 output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[index_number] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
@@ -383,10 +383,10 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
 
 
             if(pokearray.game in {'XY', 'ORAS'} and evolution_parameter_types[method] == '' and parameter_index != 0):
-                level_phrase = ', and being at least Level ' + str(parameter_index)
+                level_phrase = ', while at least Level ' + str(parameter_index)
             elif(pokearray.game in {'SM', 'USUM'}):
                 if(file[offset + 7] != 0):
-                    level_phrase = ', and being at least Level ' + str(file[offset + 7])
+                    level_phrase = ', while at least Level ' + str(file[offset + 7])
 
 
             output_phrase = 'Evolves to ' + pokearray.pokemon_name_list[evo_target_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
