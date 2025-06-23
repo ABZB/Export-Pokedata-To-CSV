@@ -325,9 +325,9 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
                         level_phrase = ', and being at least Level ' + str(file[offset + 7])
 
 
-                output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[evolve_from_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
+                output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[index_number] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
 
-                temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[evolve_from_index], output_phrase])
+                temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[index_number], output_phrase])
 
         #Evolve to
         file = pokearray.evolution[index]
