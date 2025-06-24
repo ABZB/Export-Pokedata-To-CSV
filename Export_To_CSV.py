@@ -57,7 +57,6 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         #restart from beginning if reached maximum
         if(current_index > max_personal):
             current_index = 1
-            continue
         #if no egg moves, go to next pokemon
         elif(len(pokearray.egg_array[current_index]) == 0):
             current_index += 1
@@ -76,6 +75,8 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         for target_index in pokearray.evolution_chain_to[current_index]:
             for move in pokearray.egg_array[current_index]:
                 pokearray.egg_array[target_index].append(move)
+            for move_line in pokearray.egg_array[current_index]:
+                pokearray.egg_array[target_index].append(move_line)
 
             #now remove target index from this Pokemon, and current index from the target's evolve-from
 
