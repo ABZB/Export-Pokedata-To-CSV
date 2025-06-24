@@ -41,6 +41,16 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
             #each move is 2 bytes. in XY/ORAS first two bytes are count of egg moves. In SM/USUM before those bytes are the pointer to the alt forme egg move file
             for x in range((2 if pokearray.game in {'XY', 'ORAS'} else 4), len(pokearray.egg[egg_index]), 2):
                 pokearray.egg_array[index].append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
+    
+    #remove duplicates from the evolution chain lists (happens from having multiple evo methods)
+
+    for x in pokearray.evolution_chain_to:
+        x = list(set(x))
+
+    for x in pokearray.evolution_chain_from:
+        x = list(set(x))
+
+
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
