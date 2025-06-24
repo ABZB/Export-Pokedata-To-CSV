@@ -92,6 +92,13 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
 
             #remove target pokemon from list of Pokemon current pokemon evolves to
             pokearray.evolution_chain_to[current_index].remove(target_index)
+
+        
+    #now we need to eliminate duplicates
+    for egg_move_list in pokearray.egg_array:
+        egg_move_list = list(set(egg_move_list))
+
+
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
