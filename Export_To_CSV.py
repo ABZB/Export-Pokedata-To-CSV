@@ -513,10 +513,8 @@ def main():
             else:
                 break
 
-
-
-    #load pokemon names
-    with open(pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+    #load custom names
+    with open(custom_pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
         reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
         #load csv into an array      
@@ -535,6 +533,7 @@ def main():
         #no custom names
         pokearray.new_names = False
         print('No new names detected')
+        pokearray.pokemon_name_list = pokearray.original_pokemon_name_list
     else:
         pokearray.new_names = True
         print('New names detected')
