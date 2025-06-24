@@ -2,6 +2,12 @@ from garc_handling import *
 from utilities import *
 from my_constants import *
 
+
+def make_eggs_list(pokearray, underlying_source_index = 0, ):
+    pokearray.egg_array = [[]]*len(pokearray.personal)
+
+        if(index <= pokearray.max_species_index):
+            egg_index = index
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
@@ -22,7 +28,8 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
 
 
         #Species/Forme Name
-        temp_array.append([index, 'Name',pokearray.pokemon_name_list[index]])
+        temp_array.append([index, 'Name', pokearray.pokemon_name_list[index]])
+
 
         #check if has any alt formes. target index is 0 in main call
         if(target_index == 0):
@@ -40,10 +47,14 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
         print('Now compiling ' + str(index) + ': ' + pokearray.pokemon_name_list[index])
         #Base Index
         if(base_index == 0):
-            temp_array.append([index, 'Base Index',index])
+            temp_array.append([index, 'Base Index', index])
         else:
-            temp_array.append([index, 'Base Index',base_index])
+            temp_array.append([index, 'Base Index', base_index])
+        
+        temp_array.append([index, 'Forme Index', forme_number])
 
+
+        temp_array.append([index, 'Is New', str(pokearray.new_list[index])])
         #Stats
         temp_array.append([index, stat_names[0], personal[0]])
         temp_array.append([index, stat_names[1], personal[1]])

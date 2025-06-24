@@ -36,6 +36,11 @@ class Pokedata:
 
         self.write_array = []
 
+        self.evolution_chain_to = []
+
+        self.evolution_chain_from = []
+
+        self.egg_array = []
 
 
 type_list = ['Normal','Fighting','Flying','Poison','Ground','Rock','Bug','Ghost','Steel','Fire','Water','Grass','Electric','Psychic','Ice','Dragon','Dark','Fairy']
