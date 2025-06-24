@@ -500,8 +500,8 @@ def main():
 
 
 
-    #check for custom Pokemon names
-    with open(custom_pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+    #get default names
+    with open(pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
         reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
         #load csv into an array      
@@ -531,12 +531,20 @@ def main():
     #check if no custom names
     if(len(pokearray.original_pokemon_name_list) <= 10 or pokearray.original_pokemon_name_list == pokearray.pokemon_name_list):
         #no custom names
-        pokearray.new_names = False
         print('No new names detected')
         pokearray.pokemon_name_list = pokearray.original_pokemon_name_list
+        pokearray.new_list = [False]*len(pokearray.pokemon_name_list)
     else:
-        pokearray.new_names = True
         print('New names detected')
+        #see what names are new or not
+        for name in pokearray.pokemon_name_list:
+            if(name in pokearray.original_pokemon_name_list):
+                pokearray.new_list.append(False)
+            else:
+                pokearray.new_list.append(True)
+
+
+
 
 
     #load move names
