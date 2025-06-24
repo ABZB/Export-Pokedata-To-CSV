@@ -458,6 +458,8 @@ def main():
     tutor_table_raw = []
 
 
+    
+
     #get generation
     while True:
         temp = input('Enter Game, (XY, ORAS, SM, USUM)\n').upper()
@@ -696,7 +698,9 @@ def main():
 
 
     if(dump_bool):
-        pokearray.write_array = [[]]*(len(pokearray.personal))
+        pokearray.write_array = [[]]*len(pokearray.personal)
+        pokearray.evolution_chain_to = [[]]*len(pokearray.personal)
+        pokearray.evolution_chain_f = [[]]*len(pokearray.personal)
 
         pokearray = build_total_output_array(pokearray)
 
