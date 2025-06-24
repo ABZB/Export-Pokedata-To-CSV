@@ -99,6 +99,10 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         egg_move_list = list(set(egg_move_list))
 
 
+    #and finally append
+    for index, entry in enumerate(pokearray.write_array):
+        #write array does not record pokemon 0, so it ends up off-by-one
+        entry.extend(pokearray.egg_array[index + 1])
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
