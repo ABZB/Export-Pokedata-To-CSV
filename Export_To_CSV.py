@@ -494,7 +494,6 @@ def main():
             print(temp, 'is not valid\n\n')
         
     
-    pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
     pokemon_list_path = os.path.join(reference_directory, 'default_pokemon_list_' + pokearray.game + '.csv')
     
     custom_pokemon_list_path = os.path.join(reference_directory, 'custom_pokemon_list.csv')
@@ -530,6 +529,16 @@ def main():
                 break
 
     print('Loaded Pokemon Name List')
+
+    #check if no custom names
+    if(len(pokearray.original_pokemon_name_list) <= 10 or pokearray.original_pokemon_name_list == pokearray.pokemon_name_list):
+        #no custom names
+        pokearray.new_names = False
+        print('No new names detected')
+    else:
+        pokearray.new_names = True
+        print('New names detected')
+
 
     #load move names
     with open(move_list_path, newline = '', encoding='utf-8-sig') as csvfile:
