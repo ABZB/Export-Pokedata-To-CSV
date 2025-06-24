@@ -56,7 +56,14 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
 
         #restart from beginning if reached maximum
         if(current_index > max_personal):
-            current_index = 1
+
+            #check if entire evolves-to array is now empty, if it is, break
+            if(all(not sub_array for sub_array in pokearray.evolution_chain_to)):
+                break
+            else:
+                current_index = 1
+                continue
+
         #if no egg moves, go to next pokemon
         elif(len(pokearray.egg_array[current_index]) == 0):
             current_index += 1
