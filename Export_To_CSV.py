@@ -6,6 +6,8 @@ from my_constants import *
 def make_eggs_list(pokearray, underlying_source_index = 0, ):
     pokearray.egg_array = [[]]*len(pokearray.personal)
 
+    max_personal = len(pokearray.write_array)
+
         if(index <= pokearray.max_species_index):
             egg_index = index
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
