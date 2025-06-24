@@ -8,6 +8,7 @@ class Pokedata:
         self.levelup_path = ''
         self.evolution_path = ''
         self.egg_path = ''
+        self.mega_path = ''
 
         #file/game variables
         self.game = ''
@@ -17,6 +18,8 @@ class Pokedata:
         self.levelup = []
         self.evolution = []
         self.egg = []
+        self.mega = []
+        self.ultra = []
         
         self.tm_name_list = []
         self.special_tutor_name_list = []
@@ -24,6 +27,7 @@ class Pokedata:
         self.bp_tutor_move_name_list = []
         
         self.pokemon_name_list = []
+        self.original_pokemon_name_list = []
         self.move_name_list = []
         self.ability_name_list = []
         self.item_name_list = []
