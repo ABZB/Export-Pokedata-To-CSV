@@ -208,43 +208,6 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
                         temp_array.append([index, 'Move Tutor', 'Big Wave Beach' if bit_count <= 15 else 'Heahea Beach' if bit_count <= 31 else "Ula'ula Beach" if bit_count <= 48 else 'Battle Tree', pokearray.bp_tutor_move_name_list[bit_count]])
                     bit_count += 1
 
-
-
-
-        #Egg Moves
-        #if is a base forme, same as index
-        egg_index = 0
-        if(base_index == 0):
-            egg_index = index
-        #XY/ORAS have all formes share the same egg move file
-        elif(pokearray.game in {'XY', 'ORAS'}):
-            egg_index = base_index
-        #otherwise we need to get the first two bytes of the base forme's egg move file, this is the pointer to the first alt forme's file. add (forme number - 1) to that to get correct file, IF IT EXISTS
-        else:
-            temp_value = from_little_bytes_int(pokearray.egg[base_index][0:2])
-
-            if(temp_value == base_index or temp_value == 0):
-                pass
-            else:
-                egg_index = temp_value + forme_number - 1
-
-                #if the pointer in the new file is wrong, no eggs
-                if(from_little_bytes_int(pokearray.egg[egg_index][0:2]) != temp_value):
-                    egg_index = 0
-
-
-        #if length is 4 or less, than it has no actual egg moves
-
-        if(len(pokearray.egg[egg_index]) <= 4 or egg_index == 0):
-            pass
-        else:
-            #each move is 2 bytes. in XY/ORAS first two bytes are count of egg moves. In SM/USUM before those bytes are the pointer to the alt forme egg move file
-            for x in range((2 if pokearray.game in {'XY', 'ORAS'} else 4), len(pokearray.egg[egg_index]), 2):
-                temp_array.append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
-
-
-
-
         #Evolve From
 
         #0x0 - Evolution type
