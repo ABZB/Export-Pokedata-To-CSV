@@ -389,6 +389,10 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
         else:
             index += 1
 
+    make_eggs_list(pokearray)
+
+    return(pokearray)
+
 def build_summary_output_array(pokearray):
 
     for index, personal in enumerate(pokearray.personal):
