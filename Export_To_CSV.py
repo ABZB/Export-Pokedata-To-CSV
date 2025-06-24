@@ -438,8 +438,6 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
 
-        #Check if in a subcall for alt forme or if added final non-alt forme (alt formes of that base forme were branched to above)
-        if(base_index != 0 or (index == least_alt_index - 1)):
         #Check if in a subcall for alt forme
         if(base_index != 0):
             return(pokearray)
