@@ -51,6 +51,25 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         x = list(set(x))
 
 
+    current_index = 1
+    while True:
+
+        #restart from beginning if reached maximum
+        if(current_index > max_personal):
+            current_index = 1
+            continue
+        #if no egg moves, go to next pokemon
+        elif(len(pokearray.egg_array[current_index]) == 0):
+            current_index += 1
+            continue
+        #if this Pokemon has any Pokemon it evolves from that haven't been finished yet, if so go to next
+        elif(len(pokearray.evolution_chain_from[current_index]) != 0):
+            current_index += 1
+            continue
+        #we are thus now at a Pokemon that has egg moves and has no unfinished preceding Pokemon, check if it has any evolutions
+        elif(len(pokearray.evolution_chain_to[current_index]) == 0):
+            current_index += 1
+            continue
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
