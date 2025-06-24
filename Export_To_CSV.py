@@ -301,6 +301,9 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
 
                 output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[index_number] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
 
+                #build array of indices this index evolves to
+                pokearray.evolution_chain_from[index].append(index_number)
+
                 temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[index_number], output_phrase])
 
         #Evolve to
@@ -364,6 +367,9 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
 
 
             output_phrase = 'Evolves to ' + pokearray.pokemon_name_list[evo_target_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
+
+            #build array of indices this index evolves to
+            pokearray.evolution_chain_to[index].append(evo_target_index)
 
             temp_array.append([index, 'Evolves To', pokearray.pokemon_name_list[evo_target_index], output_phrase])
 
