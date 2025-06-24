@@ -495,6 +495,26 @@ def main():
         
     
     pokemon_list_path = os.path.join(reference_directory, 'pokemon_list_' + pokearray.game + '.csv')
+    pokemon_list_path = os.path.join(reference_directory, 'default_pokemon_list_' + pokearray.game + '.csv')
+    
+    custom_pokemon_list_path = os.path.join(reference_directory, 'custom_pokemon_list.csv')
+
+
+
+    #check for custom Pokemon names
+    with open(custom_pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+
+        for line in temp:
+            if(line[1] != '' or line[0] == '0'):
+                pokearray.original_pokemon_name_list.append(line[1])
+            else:
+                break
+
+
 
     #load pokemon names
     with open(pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:

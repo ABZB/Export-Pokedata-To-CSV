@@ -34,6 +34,8 @@ class Pokedata:
 
         self.write_array = []
 
+        self.new_names = True
+
 
 
 type_list = ['Normal','Fighting','Flying','Poison','Ground','Rock','Bug','Ghost','Steel','Fire','Water','Grass','Electric','Psychic','Ice','Dragon','Dark','Fairy']
