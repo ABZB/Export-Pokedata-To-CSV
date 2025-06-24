@@ -28,13 +28,13 @@ class Pokedata:
         
         self.pokemon_name_list = []
         self.original_pokemon_name_list = []
+        self.new_list = []
+
         self.move_name_list = []
         self.ability_name_list = []
         self.item_name_list = []
 
         self.write_array = []
-
-        self.new_names = True
 
 
 
