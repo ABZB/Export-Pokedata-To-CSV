@@ -80,8 +80,6 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         #we know it has evolutions, so append egg moves to each of them
 
         for target_index in pokearray.evolution_chain_to[current_index]:
-            for move in pokearray.egg_array[current_index]:
-                pokearray.egg_array[target_index].append(move)
             for move_line in pokearray.egg_array[current_index]:
                 pokearray.egg_array[target_index].append(move_line)
 
@@ -105,6 +103,10 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         entry.extend(pokearray.egg_array[index + 1])
 
     return(pokearray)
+
+
+
+
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
     #iterate over all files
