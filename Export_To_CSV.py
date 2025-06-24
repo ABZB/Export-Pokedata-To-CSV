@@ -378,7 +378,13 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
 
         #Check if in a subcall for alt forme or if added final non-alt forme (alt formes of that base forme were branched to above)
         if(base_index != 0 or (index == least_alt_index - 1)):
+        #Check if in a subcall for alt forme
+        if(base_index != 0):
             return(pokearray)
+        #added final non-alt forme (alt formes of that base forme were branched to above)
+        elif(index == least_alt_index - 1):
+            pokearray.max_species_index = index
+            break
         #otherwise increment index by 1 and do next loop
         else:
             index += 1
