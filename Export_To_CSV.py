@@ -4,12 +4,11 @@ from my_constants import *
 
 
 def make_eggs_list(pokearray, underlying_source_index = 0, ):
-    pokearray.egg_array = [[]]*len(pokearray.personal)
-
-    max_personal = len(pokearray.write_array)
+    pokearray.egg_array = [[] for _ in range(len(pokearray.personal))]
 
     #build stage 1
     for index, pokemon_data in enumerate(pokearray.write_array):
+
         #Egg Moves. 
         #if is a base forme, same as index
         egg_index = 0
@@ -39,9 +38,12 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
             pass
         else:
             #each move is 2 bytes. in XY/ORAS first two bytes are count of egg moves. In SM/USUM before those bytes are the pointer to the alt forme egg move file
+            temp_egg = []
             for x in range((2 if pokearray.game in {'XY', 'ORAS'} else 4), len(pokearray.egg[egg_index]), 2):
-                pokearray.egg_array[index].append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
-    
+                temp_egg.append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
+
+            pokearray.egg_array[index] = temp_egg
+
     #remove duplicates from the evolution chain lists (happens from having multiple evo methods)
 
     for x in pokearray.evolution_chain_to:
@@ -51,56 +53,87 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         x = list(set(x))
 
 
-    current_index = 1
+    #build list of Pokemon that actually evolve at all
+    iter_table = []
+    for x, evo_to_table in enumerate(pokearray.evolution_chain_to):
+        if(len(evo_to_table) != 0):
+            iter_table.append(x)
+
+    last_value = 0
     while True:
+        to_remove = []
 
-        #restart from beginning if reached maximum
-        if(current_index > max_personal):
+        print(len(iter_table),'Pokemon that evolve')
 
-            #check if entire evolves-to array is now empty, if it is, break
-            if(all(not sub_array for sub_array in pokearray.evolution_chain_to)):
-                break
-            else:
-                current_index = 1
+        for current_index in iter_table:
+            #if no egg moves, go to next pokemon
+            if(len(pokearray.egg_array[current_index]) == 0):
+                continue
+            #if this Pokemon has any Pokemon it evolves from that haven't been finished yet, if so go to next
+            if(len(pokearray.evolution_chain_from[current_index]) != 0):
                 continue
 
-        #if no egg moves, go to next pokemon
-        elif(len(pokearray.egg_array[current_index]) == 0):
-            current_index += 1
-            continue
-        #if this Pokemon has any Pokemon it evolves from that haven't been finished yet, if so go to next
-        elif(len(pokearray.evolution_chain_from[current_index]) != 0):
-            current_index += 1
-            continue
-        #we are thus now at a Pokemon that has egg moves and has no unfinished preceding Pokemon, check if it has any evolutions
-        elif(len(pokearray.evolution_chain_to[current_index]) == 0):
-            current_index += 1
-            continue
+            print(current_index,'evolves to', pokearray.evolution_chain_to[current_index])
 
-        #we know it has evolutions, so append egg moves to each of them
+            #iterate over all Pokemon it evolves into
+            for target_index in pokearray.evolution_chain_to[current_index]:
+                temp = []
+                #for each egg move it has
+                for move_line in pokearray.egg_array[current_index]:
+                    #print(move_line)
+                    #check to see if evolved form already has it
+                    temp_bool = True
+                    for other_move_line in pokearray.egg_array[target_index]:
+                        if(move_line[2] == other_move_line[2]):
+                            temp_bool = False
+                            break
+                    #if it doesn't, append it
+                    if(temp_bool):
+                        
+                        temp.append([target_index, move_line[1], move_line[2]])
+                for x in temp:
+                    pokearray.egg_array[target_index].append(x)
 
-        for target_index in pokearray.evolution_chain_to[current_index]:
-            for move_line in pokearray.egg_array[current_index]:
-                pokearray.egg_array[target_index].append(move_line)
+                #remove the current Pokemon from list of Pokemon target evolves from
+                try:
+                    pokearray.evolution_chain_from[target_index].remove(current_index)
+                except:
+                    pass
+                #remove target pokemon from list of Pokemon current pokemon evolves to
+                pokearray.evolution_chain_to[current_index].remove(target_index)
+            #build list of the pokemon we did
+            try:
+                to_remove.append(current_index)
+            except:
+                pass
+        #remove the completed elements
+        for x in to_remove:
+            try:
+                iter_table.remove(x)
+            except:
+                pass
 
-            #now remove target index from this Pokemon, and current index from the target's evolve-from
-
-            #remove the current Pokemon from list of Pokemon target evolves from
-            pokearray.evolution_chain_from[target_index].remove(current_index)
-
-            #remove target pokemon from list of Pokemon current pokemon evolves to
-            pokearray.evolution_chain_to[current_index].remove(target_index)
-
+        if(len(iter_table) == 0):
+            if(len(pokearray.evolution_chain_from) == len(pokearray.evolution_chain_to)):
+                break
+            else:
+                print('error', len(pokearray.evolution_chain_from), len(pokearray.evolution_chain_to))
+        elif(len(iter_table) == last_value):
+            print('infinite loop detected, breaking')
+            break
+        else:
+            last_value = len(iter_table)
         
     #now we need to eliminate duplicates
     for egg_move_list in pokearray.egg_array:
-        egg_move_list = list(set(egg_move_list))
+        tupled_lst = set(map(tuple, egg_move_list))
+        egg_move_list = map(list, tupled_lst)
 
 
     #and finally append
     for index, entry in enumerate(pokearray.write_array):
         #write array does not record pokemon 0, so it ends up off-by-one
-        entry.extend(pokearray.egg_array[index + 1])
+        entry.extend(pokearray.egg_array[index])
 
     return(pokearray)
 
@@ -320,6 +353,7 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
         #0x6 - Target forme (FF is preserve current)
         #0x7 - Level (0 is "NA")
 
+        temp_from = []
         #set values depending on generation
         line_length = 6 if pokearray.game in ('XY', 'ORAS') else 8
         for index_number, file in enumerate(pokearray.evolution):
@@ -401,12 +435,14 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
                 output_phrase = 'Evolves from ' + pokearray.pokemon_name_list[index_number] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
 
                 #build array of indices this index evolves to
-                pokearray.evolution_chain_from[index].append(index_number)
+                temp_from.append(index_number)
+                
 
                 temp_array.append([index, 'Evolves From', pokearray.pokemon_name_list[index_number], output_phrase])
-
+        pokearray.evolution_chain_from[index] = temp_from
         #Evolve to
         file = pokearray.evolution[index]
+        temp_to = []
         for offset in range(0, 8*line_length, line_length):
             evolve_to_index = from_little_bytes_int(file[offset + 4:offset + 6])
                 
@@ -468,9 +504,10 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
             output_phrase = 'Evolves to ' + pokearray.pokemon_name_list[evo_target_index] + ' by ' + evolution_description_phrases[method] + parameter_phrase + level_phrase
 
             #build array of indices this index evolves to
-            pokearray.evolution_chain_to[index].append(evo_target_index)
+            temp_to.append(evo_target_index)
 
             temp_array.append([index, 'Evolves To', pokearray.pokemon_name_list[evo_target_index], output_phrase])
+        pokearray.evolution_chain_to[index] = temp_to
 
         #put the fully built pokemon output thing into its place
         pokearray.write_array[index] = temp_array
@@ -603,22 +640,24 @@ def main():
                 break
 
     #load custom names
-    with open(custom_pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+    try:
+        with open(custom_pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
+            reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
-        #load csv into an array      
-        temp = list(reader_head)
+            #load csv into an array      
+            temp = list(reader_head)
 
-        for line in temp:
-            if(line[1] != '' or line[0] == '0'):
-                pokearray.pokemon_name_list.append(line[1])
-            else:
-                break
-
+            for line in temp:
+                if(line[1] != '' or line[0] == '0'):
+                    pokearray.pokemon_name_list.append(line[1])
+                else:
+                    break
+    except:
+        pokearray.pokemon_name_list = []
     print('Loaded Pokemon Name List')
 
     #check if no custom names
-    if(len(pokearray.original_pokemon_name_list) <= 10 or pokearray.original_pokemon_name_list == pokearray.pokemon_name_list):
+    if(len(pokearray.pokemon_name_list) <= 10 or pokearray.original_pokemon_name_list == pokearray.pokemon_name_list):
         #no custom names
         print('No new names detected')
         pokearray.pokemon_name_list = pokearray.original_pokemon_name_list
@@ -813,7 +852,7 @@ def main():
     if(dump_bool):
         pokearray.write_array = [[]]*len(pokearray.personal)
         pokearray.evolution_chain_to = [[]]*len(pokearray.personal)
-        pokearray.evolution_chain_f = [[]]*len(pokearray.personal)
+        pokearray.evolution_chain_from = [[]]*len(pokearray.personal)
 
         pokearray = build_total_output_array(pokearray)
 
