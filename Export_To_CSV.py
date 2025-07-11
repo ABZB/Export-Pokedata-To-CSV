@@ -90,7 +90,7 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
                     #if it doesn't, append it
                     if(temp_bool):
                         
-                        temp.append([target_index, move_line[1], move_line[2]])
+                        temp.append([target_index, move_line[1], move_line[2], move_line[3]])
                 for x in temp:
                     pokearray.egg_array[target_index].append(x)
 
@@ -136,9 +136,6 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
         entry.extend(pokearray.egg_array[index])
 
     return(pokearray)
-
-
-
 
 def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_number = 0):
 
