@@ -136,6 +136,9 @@ def load_GARC(poke_edit_data, garc_path, target):
                 case "Egg":
                     poke_edit_data.egg = file_array
 
+                case "Move":
+                    poke_edit_data.move_raw = file_array
+
 
         except Exception as e:
             print(e)
@@ -161,6 +164,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '2/1/5'
                 case "Egg":
                     targetpath = '2/1/3'
+                case "Move":
+                    targetpath = '2/1/2'
         case "ORAS":
             match target:
                 case "Personal":
@@ -171,6 +176,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '1/9/2'
                 case "Egg":
                     targetpath = '1/9/0'
+                case "Move":
+                    targetpath = '1/8/9'
         case "SM":
             match target:
                 case"Personal":
@@ -181,6 +188,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '0/1/4'
                 case "Egg":
                     targetpath = '0/1/2'
+                case "Move":
+                    targetpath = '0/1/1'
         case "USUM":
             match target:
                 case"Personal":
@@ -191,6 +200,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '0/1/4'
                 case "Egg":
                     targetpath = '0/1/2'
+                case "Move":
+                    targetpath = '0/1/1'
         case "Select Game":
                print("Error: Game not set")
                return

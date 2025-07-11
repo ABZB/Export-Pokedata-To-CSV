@@ -10,6 +10,8 @@ class Pokedata:
         self.egg_path = ''
         self.mega_path = ''
 
+        self.move_path = ''
+
         #file/game variables
         self.game = ''
         self.max_species_index = 0
@@ -20,6 +22,9 @@ class Pokedata:
         self.egg = []
         self.mega = []
         self.ultra = []
+
+        self.move = []
+        self.move_raw = []
         
         self.tm_name_list = []
         self.special_tutor_name_list = []
@@ -56,7 +61,7 @@ color_list = {0x0: 'Red',
               0x8: 'White',
               0x9: 'Pink',}
 
-stat_names = ['HP', 'Attack', 'Defense', 'Special Attack', 'Special Defense', 'Speed']
+stat_names = ['HP', 'Attack', 'Defense', 'Special Attack', 'Special Defense', 'Speed', 'Accuracy', 'Evasion', 'All']
 
 level_curve_list = ['Medium-Fast', 'Erratic', 'Fluctuating', 'Medium-Slow', 'Fast', 'Slow']
 
@@ -69,3 +74,13 @@ pokemon_types = ['Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bu
 pokemon_versions = {32: "Ultra Sun",
                     33: "Ultra Moon"
                     }
+
+move_categories = ['Status', 'Physical', 'Special']
+
+move_targeting = ['Single Adjacent', 'Any Ally (including self)', 'Any Ally (excluding self)', 'Single Foe', 'All Adjacent', 'All Foes', 'All Allies (including self)', 'Self', 'All (including self)', 'Random Foe', 'Entire Field', 'Opponent Field', 'User Field', 'Self (counter moves)']
+
+z_move_effects = ['', '+1 ATK', '+2 ATK', '+3 ATK', '+1 DEF', '+2 DEF', '+3 DEF', '+1 SPATK', '+2 SPATK', '+3 SPATK', '+1 SPDEF', '+2 SPDEF', '+3 SPDEF', '+1 SPE', '+2 SPE', '+3 SPE', '+1 ACC', '+2 ACC', '+3 ACC', '+1 EVA', '+2 EVA', '+3 EVA', '+1 to all (except ACC/EVA)', '+2 to all (except ACC/EVA)', '+3 to all (except ACC/EVA)', '+2 CRIT', 'Reset user lowered stats', 'Recover user HP', 'Recovers HP of Pokémon switching in', 'Makes user center of attention', 'Recovers HP if the user is a Ghost type, +1 ATK otherwise']
+
+status_conditions = ['None', 'Paralyze', 'Sleep', 'Freeze', 'Burn', 'Poison', 'Confusion', 'Attract', 'Capture', 'Nightmare', 'Curse', 'Taunt', 'Torment', 'Disable', 'Yawn', 'Heal Block', 'Protected', 'Detected', 'Leech Seed', 'Embargo', 'Perish Song', 'Ingrain', 'Cannot Switch', 'Encore', 'Mute', 'Unknown', 'Unknown', 'Unknown', 'Unknown', 'Unknown', 'Unknown', 'Unknown', 'Grounded', 'Telekinesis', 'Unknown', 'Unknown', 'Aqua Ring', 'Unknown', 'Unknown', 'Unknown', 'Unknown']
+
+flag_array = ['Contact', 'Charge', 'Recharge', 'Ignores Protect', 'Magic Bounce/Coat', 'Snatchable', 'Mirror Moveable', 'Punch', 'Sound', 'Gravity Disables', 'Defrosts User', 'Any Target Triple', 'Healing', 'Ignores Substitute', 'Fails Sky Battle', 'Animates Ally', 'Dance', 'Slicing', 'Biting', 'Bulletproof', 'Mega Launcher', 'Wind', 'Light']

@@ -1,7 +1,6 @@
 from garc_handling import *
 from utilities import *
 from my_constants import *
-
 from pokemon_data_handling import *
 from move_data_handling import *
 
@@ -167,6 +166,7 @@ def main():
     pokearray.evolution_path = os.path.join(romfs_path, get_GARC_path('Evolution', pokearray.game))
     pokearray.levelup_path = os.path.join(romfs_path, get_GARC_path('Levelup', pokearray.game))
     pokearray.egg_path = os.path.join(romfs_path, get_GARC_path('Egg', pokearray.game))
+    pokearray.move_path = os.path.join(romfs_path, get_GARC_path('Move', pokearray.game))
 
     print('Now loading GARCs...')
 
@@ -175,9 +175,27 @@ def main():
     load_GARC(pokearray, pokearray.evolution_path, 'Evolution')
     load_GARC(pokearray, pokearray.levelup_path, 'Levelup')
     load_GARC(pokearray, pokearray.egg_path, 'Egg')
-
-
+    load_GARC(pokearray, pokearray.move_path, 'Move')
     print('GARCs Loaded')
+
+    #in SM/USUM, moves are all in a single file, not each in their own when extracted
+    if(pokearray.game == 'XY'):
+        pokearray.move = pokearray.move_raw
+    else:
+        #this includes the empty 0th move
+        move_count = from_little_bytes_int(pokearray.move_raw[0][2:4])
+
+        #get the offsets of 0th move and 1st move
+        zeroth_address = from_little_bytes_int(pokearray.move_raw[0][4:8])
+        first_address = from_little_bytes_int(pokearray.move_raw[0][8:0xC])
+
+        #and from them the length of each block
+        move_data_length = first_address - zeroth_address
+
+        #put each block in its own sublist
+        for block in range(move_count):
+            pokearray.move.append(pokearray.move_raw[0][block*move_data_length + zeroth_address : block*move_data_length + zeroth_address + move_data_length])
+
 
     if(pokearray.game in {'ORAS', 'USUM'}):
         print('Now loading BP Move Tutor Table')
@@ -281,7 +299,7 @@ def main():
 
         while True:
             try:
-                with open(asksaveasfilename(title='Save Full Dump File', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+                with open(asksaveasfilename(title='Save Full Pokemon Dump File', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
                     writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
 
                     #write the header line
@@ -302,7 +320,7 @@ def main():
 
         while True:
             try:
-                with open(asksaveasfilename(title='Save Exported Data', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+                with open(asksaveasfilename(title='Save Exported Pokemon Summary File', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
                     writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
 
                     #write the header line
@@ -315,6 +333,27 @@ def main():
 
                     for row in pokearray.write_array:
                             writer_head.writerow(row)
+                break
+            except Exception as e:
+                print(e)
+
+    if(move_dump_bool):
+        pokearray.write_array = []
+
+        pokearray = build_move_output_array(pokearray)
+
+        while True:
+            try:
+                with open(asksaveasfilename(title='Save Exported Move Dump File', defaultextension='.csv',filetypes= [('CSV','.csv')]), 'w', newline = '', encoding='utf-8-sig') as csvfile:
+                    writer_head = csv.writer(csvfile, dialect='excel', delimiter=',')
+
+                    #write the header line
+                    writer_head.writerow (['Move Index', 'Field', 'Data 1', 'Data 2'])
+
+                    for entry in pokearray.write_array:
+                        for row in entry:
+                            writer_head.writerow(row)
+                        writer_head.writerow(['', '', '', ''])
                 break
             except Exception as e:
                 print(e)

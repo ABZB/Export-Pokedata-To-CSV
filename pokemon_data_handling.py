@@ -58,18 +58,20 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
             iter_table.append(x)
 
     last_value = 0
+    no_remove_bool = False
     while True:
         to_remove = []
 
         print(len(iter_table),'Pokemon that evolve')
 
         for current_index in iter_table:
+            no_remove_bool = False
             #if no egg moves, go to next pokemon
             if(len(pokearray.egg_array[current_index]) == 0):
                 continue
             #if this Pokemon has any Pokemon it evolves from that haven't been finished yet, if so go to next
             if(len(pokearray.evolution_chain_from[current_index]) != 0):
-                continue
+                no_remove_bool = True
 
             print(current_index,'evolves to', pokearray.evolution_chain_to[current_index])
 
@@ -93,17 +95,19 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
                     pokearray.egg_array[target_index].append(x)
 
                 #remove the current Pokemon from list of Pokemon target evolves from
+                if(no_remove_bool is False):
+                    try:
+                        pokearray.evolution_chain_from[target_index].remove(current_index)
+                    except:
+                        pass
+                    #remove target pokemon from list of Pokemon current pokemon evolves to
+                    pokearray.evolution_chain_to[current_index].remove(target_index)
+            if(no_remove_bool is False):
+                #build list of the pokemon we did
                 try:
-                    pokearray.evolution_chain_from[target_index].remove(current_index)
+                    to_remove.append(current_index)
                 except:
                     pass
-                #remove target pokemon from list of Pokemon current pokemon evolves to
-                pokearray.evolution_chain_to[current_index].remove(target_index)
-            #build list of the pokemon we did
-            try:
-                to_remove.append(current_index)
-            except:
-                pass
         #remove the completed elements
         for x in to_remove:
             try:
