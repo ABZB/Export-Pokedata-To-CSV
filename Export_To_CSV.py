@@ -592,8 +592,7 @@ def build_summary_output_array(pokearray):
 
     return(pokearray)
 
-
-def get_default_custom_csv(base_name, reference_directory, dual_bool = False):
+def get_default_custom_csv(base_name, reference_directory, game = '', dual_bool = False):
 
     temp_default = []
     temp_custom = []
@@ -602,7 +601,7 @@ def get_default_custom_csv(base_name, reference_directory, dual_bool = False):
     temp_custom_second = []
 
     #get default
-    with open(os.path.join(reference_directory, 'default_' + base_name + '.csv'), newline = '', encoding='utf-8-sig') as csvfile:
+    with open(os.path.join(reference_directory, 'default_' + base_name + (('_' + game) if game !='' else '') + '.csv'), newline = '', encoding='utf-8-sig') as csvfile:
         reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
         #load csv into an array      
@@ -730,7 +729,7 @@ def main():
     print('Loaded Item Name List')
 
     #load TM/HM/Special Tutor names
-    pokearray.tm_name_list, pokearray.special_tutor_name_list, _ = get_default_custom_csv('tm_hm_special_tutor_list_' + pokearray.game, reference_directory, dual_bool = True)
+    pokearray.tm_name_list, pokearray.special_tutor_name_list, _ = get_default_custom_csv('tm_hm_special_tutor_list', reference_directory, pokearray.game, dual_bool = True)
     print('Loaded TM/HM/Special Tutor Move Name Lists')
 
     
