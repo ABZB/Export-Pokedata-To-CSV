@@ -596,19 +596,68 @@ def build_summary_output_array(pokearray):
     return(pokearray)
 
 
+def get_default_custom_csv(base_name, reference_directory, dual_bool = False):
+
+    temp_default = []
+    temp_custom = []
+
+    temp_default_second = []
+    temp_custom_second = []
+
+    #get default
+    with open(os.path.join(reference_directory, 'default_' + base_name + '.csv'), newline = '', encoding='utf-8-sig') as csvfile:
+        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+        #load csv into an array      
+        temp = list(reader_head)
+        if(dual_bool):
+            for line in temp:
+                if(line[1] != '' or line[0] == '0'):
+                    if(line[0][0:2].upper() in {'TM', "HM"}):
+                        temp_default.append(line)
+                    else:
+                        temp_default_second.append(line)
+        else:
+            for line in temp:
+                if(line[1] != '' or line[0] == '0'):
+                    temp_default.append(line[1])
+    #try to get custom
+    try:
+        with open(os.path.join(reference_directory, 'custom_' + base_name + '.csv'), newline = '', encoding='utf-8-sig') as csvfile:
+            reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
+        
+            #load csv into an array      
+            temp = list(reader_head)
+            if(dual_bool):
+                if(line[1] != '' or line[0] == '0'):
+                    if(line[0][0:2].upper() in {'TM', "HM"}):
+                        temp_custom.append(line)
+                    else:
+                        temp_custom_second.append(line)
+            else:
+                for line in temp:
+                    if(line[1] != '' or line[0] == '0'):
+                        temp_custom.append(line[1])
+    #if fail load default
+    except:
+        print('Loading default_',base_name)
+        temp_custom = []
+
+
+
+
+    #return default if custom is very small or they're the same, otherwise custom
+    if(dual_bool):
+        return(temp_default, temp_default_second if (temp_default == temp_custom or len(temp_custom) <= 10) else temp_custom, temp_custom_second)
+    else:
+        return(temp_default if (temp_default == temp_custom or len(temp_custom) <= 10) else temp_custom)
+
 def main():
     pokearray = Pokedata()
     
     reference_directory = os.path.join(os.getcwd(),'config and data')
-    move_list_path = os.path.join(reference_directory, 'move_list.csv')
-    ability_list_path = os.path.join(reference_directory, 'ability_list.csv')
-    item_list_path = os.path.join(reference_directory, 'item_list.csv')
-    tm_list_path = os.path.join(reference_directory, 'tm_hm_special_tutor_list.csv')
 
     tutor_table_raw = []
-
-
-    
 
     #get generation
     while True:
@@ -626,7 +675,7 @@ def main():
 
 
 
-    #get default names
+    #get default Pokemon names
     with open(pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
         reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
         
@@ -639,7 +688,7 @@ def main():
             else:
                 break
 
-    #load custom names
+    #load custom Pokemon names
     try:
         with open(custom_pokemon_list_path, newline = '', encoding='utf-8-sig') as csvfile:
             reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
@@ -671,65 +720,20 @@ def main():
             else:
                 pokearray.new_list.append(True)
 
-
-
-
-
     #load move names
-    with open(move_list_path, newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-        
-        #load csv into an array      
-        temp = list(reader_head)
-
-        for line in temp:
-            if(line[1] != ''):
-                pokearray.move_name_list.append(line[1])
-            else:
-                break
+    pokearray.move_name_list = get_default_custom_csv('move_list', reference_directory).copy()
     print('Loaded Move Name List')
 
     #load ability names
-    with open(ability_list_path, newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-        
-        #load csv into an array      
-        temp = list(reader_head)
-
-        for line in temp:
-            if(line[1] != ''):
-                pokearray.ability_name_list.append(line[1])
-            else:
-                break
+    pokearray.ability_name_list = get_default_custom_csv('ability_list', reference_directory).copy()
     print('Loaded Ability Name List')
 
     #load item names
-    with open(item_list_path, newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-        
-        #load csv into an array      
-        temp = list(reader_head)
-
-        for line in temp:
-            if(line[1] != ''):
-                pokearray.item_name_list.append(line[1])
-            else:
-                break
+    pokearray.item_name_list = get_default_custom_csv('item_list', reference_directory).copy()
     print('Loaded Item Name List')
 
     #load TM/HM/Special Tutor names
-    with open(tm_list_path, newline = '', encoding='utf-8-sig') as csvfile:
-        reader_head = csv.reader(csvfile, dialect='excel', delimiter=',')
-        
-        #load csv into an array      
-        temp = list(reader_head)
-
-        for line in temp:
-            if(line[1] != ''):
-                if(line[0][0:2].upper() in {'TM', "HM"}):
-                    pokearray.tm_name_list.append(line)
-                else:
-                    pokearray.special_tutor_name_list.append(line)
+    pokearray.tm_name_list, pokearray.special_tutor_name_list, _ = get_default_custom_csv('tm_hm_special_tutor_list_' + pokearray.game, reference_directory, dual_bool = True)
     print('Loaded TM/HM/Special Tutor Move Name Lists')
 
     
