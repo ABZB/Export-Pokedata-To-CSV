@@ -18,6 +18,9 @@ def build_move_output_array(pokearray):
         #Type
         temp_array.append([move_index, 'Type', pokemon_types[move_block[0]]])
 
+        #Subcategory
+        temp_array.append([move_index, 'Subcategory', subcategories[move_block[1]]])
+
         #Targeting
         temp_array.append([move_index, 'Targeting', move_targeting[move_block[0x14]]])
 
@@ -55,8 +58,8 @@ def build_move_output_array(pokearray):
             max_turns = move_block[0xD] & 0xF
 
             if(max_turns != 0):
-                temp_array.append([move_index, 'Min Turns', min_hits])
-                temp_array.append([move_index, 'Max Turns', max_hits])
+                temp_array.append([move_index, 'Min Turns', min_turns])
+                temp_array.append([move_index, 'Max Turns', max_turns])
 
         #Crit stage
         temp_array.append([move_index, 'Crit Stage', move_block[0xE]])
@@ -69,14 +72,15 @@ def build_move_output_array(pokearray):
         if(move_block[0x12] > 156):
             temp_array.append([move_index, 'Recoil', str(move_block[0x12] - 256) + '%'])
         elif(move_block[0x12] > 0):
-            temp_array.append([move_index, 'Drain', str(move_block[0x12]) + '%'])
-
-        #Heal %
-        if(move_block[0x14] > 156):
-            temp_array.append([move_index, 'Damage', str(move_block[0x12] - 256) + '%'])
-        elif(move_block[0x13] > 0):
             temp_array.append([move_index, 'Heal', str(move_block[0x12]) + '%'])
 
+        #Heal %
+        if(move_block[0x13] > 156):
+            temp_array.append([move_index, 'Damage', str(move_block[0x13] - 256) + '%'])
+        elif(move_block[0x13] > 0):
+            temp_array.append([move_index, 'Heal', str(move_block[0x13]) + '%'])
+
+        no_stat_raise = False
         #Stats to raise
         for x in range(3):
             if(move_block[0x15 + x] == 0):
@@ -86,11 +90,11 @@ def build_move_output_array(pokearray):
                 temp_stage = str(move_block[0x18 + x] - 256)
             elif(move_block[0x18 + x] != 0):
                 temp_stage = '+' + str(move_block[0x18 + x])
-                
+            no_stat_raise = True
             temp_array.append([move_index, 'Altered Stat ' + str(x + 1), stat_names[move_block[0x15 + x]], temp_stage])
 
         #Chance of Stat change (first one is only one that matters)
-        if(move_block[0x15 + x] != 0):
+        if(no_stat_raise):
             temp_array.append([move_index, 'Stat Change %', '' if move_block[0x1B] == 0 else (str(move_block[0x1B] if move_block[2] != 0 else 100) + '%')])
         
 

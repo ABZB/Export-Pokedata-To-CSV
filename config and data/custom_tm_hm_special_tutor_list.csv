@@ -1,131 +1,111 @@
-﻿TM 001,Taunt
-TM 002,Dragon Claw
-TM 003,Psyshock
-TM 004,Calm Mind
-TM 005,Roar
-TM 006,Toxic
-TM 007,Hail
-TM 008,Bulk Up
-TM 009,Cross Poison
-TM 010,Hidden Power
-TM 011,Sunny Day
-TM 012,Endeavor
-TM 013,Ice Beam
-TM 014,Blizzard
-TM 015,Hyper Beam
-TM 016,Light Screen
-TM 017,Protect
-TM 018,Rain Dance
-TM 019,Roost
-TM 020,Dragon Pulse
-TM 021,Electroweb
-TM 022,Solar Beam
-TM 023,Zen Headbutt
-TM 024,Charge Beam
-TM 025,Thunder
-TM 026,Earthquake
-TM 027,Return
-TM 028,Flame Wheel
-TM 029,Psychic
-TM 030,Shadow Ball
-TM 031,Brick Break
-TM 032,Double Team
-TM 033,Reflect
-TM 034,Acid Wave
-TM 035,Flamethrower
-TM 036,Sludge Bomb
-TM 037,Sandstorm
-TM 038,Fire Blast
-TM 039,Rock Slide
-TM 040,Seed Bomb
-TM 041,Earth Power
-TM 042,Facade
-TM 043,Flame Charge
-TM 044,Rest
-TM 045,Rapid Spin
-TM 046,Thief
-TM 047,Icicle Crash
-TM 048,Solar Blade
-TM 049,Silver Wind
-TM 050,Overheat
-TM 051,Steel Wing
-TM 052,Throat Chop
-TM 053,Energy Ball
-TM 054,False Swipe
-TM 055,Scald
-TM 056,Drain Punch
-TM 057,Thunderbolt
-TM 058,Air Cutter
-TM 059,Gastro Acid
-TM 060,Body Slam
-TM 061,Will-O-Wisp
-TM 062,Acrobatics
-TM 063,Adamantine Chain
-TM 064,Dazzling Gleam
-TM 065,Shadow Claw
-TM 066,Payback
-TM 067,Smart Strike
-TM 068,Giga Impact
-TM 069,Rock Polish
-TM 070,Aurora Veil
-TM 071,Stone Edge
-TM 072,Volt Switch
-TM 073,Thunder Wave
-TM 074,Gyro Ball
-TM 075,Mirror Shot
-TM 076,Fly
-TM 077,Psych Up
-TM 078,Dig
-TM 079,Parting Shot
-TM 080,Power Gem
-TM 081,Play Rough
-TM 082,Dragon Tail
-TM 083,U-turn
-TM 084,Leaf Storm
-TM 085,Dark Pulse
-TM 086,Fire Lash
-TM 087,Liquidation
-TM 088,Sleep Talk
-TM 089,Parabolic Charge
-TM 090,Substitute
-TM 091,Pain Split
-TM 092,Trick Room
-TM 093,Wild Charge
-TM 094,Electro Ball
-TM 095,Snarl
-TM 096,Freeze-Dry
-TM 097,Skull Bash
-TM 098,Triple Flutter
-TM 099,Snatch
-TM 100,Aura Sphere
-TM 101,Flap Away
-TM 102,Chilly Reception
-TM 103,Bullet Seed
-TM 104,Icicle Spear
-TM 105,Bounce
-TM 106,Thunder Fang
-TM 107,Ice Fang
-TM 108,Fire Fang
-TM 109,Hydro Pump
-TM 110,Pollen Puff
-TM 111,Body Press
-TM 112,Meteor Beam
-TM 113,Ice Spinner
-TM 114,Poltergeist
-TM 115,
-TM 116,
-TM 117,
-TM 118,
-TM 119,
-TM 120,
-TM 121,
-TM 122,
-TM 123,
-TM 124,
-TM 125,
-TM 126,
-TM 127,
-TM 128,
+﻿TM 001,Grass Pledge
+TM 002,Grass Pledge
+TM 003,Grass Pledge
+TM 004,Grass Pledge
+TM 005,Grass Pledge
+TM 006,Grass Pledge
+TM 007,Grass Pledge
+TM 008,Grass Pledge
+TM 009,Grass Pledge
+TM 010,Grass Pledge
+TM 011,Grass Pledge
+TM 012,Grass Pledge
+TM 013,Grass Pledge
+TM 014,Grass Pledge
+TM 015,Grass Pledge
+TM 016,Grass Pledge
+TM 017,Grass Pledge
+TM 018,Grass Pledge
+TM 019,Grass Pledge
+TM 020,Grass Pledge
+TM 021,Grass Pledge
+TM 022,Grass Pledge
+TM 023,Grass Pledge
+TM 024,Grass Pledge
+TM 025,Grass Pledge
+TM 026,Grass Pledge
+TM 027,Grass Pledge
+TM 028,Grass Pledge
+TM 029,Grass Pledge
+TM 030,Grass Pledge
+TM 031,Grass Pledge
+TM 032,Grass Pledge
+TM 033,Grass Pledge
+TM 034,Grass Pledge
+TM 035,Grass Pledge
+TM 036,Grass Pledge
+TM 037,Grass Pledge
+TM 038,Grass Pledge
+TM 039,Grass Pledge
+TM 040,Grass Pledge
+TM 041,Grass Pledge
+TM 042,Grass Pledge
+TM 043,Grass Pledge
+TM 044,Grass Pledge
+TM 045,Grass Pledge
+TM 046,Grass Pledge
+TM 047,Grass Pledge
+TM 048,Grass Pledge
+TM 049,Grass Pledge
+TM 050,Grass Pledge
+TM 051,Grass Pledge
+TM 052,Grass Pledge
+TM 053,Grass Pledge
+TM 054,Grass Pledge
+TM 055,Grass Pledge
+TM 056,Grass Pledge
+TM 057,Grass Pledge
+TM 058,Grass Pledge
+TM 059,Grass Pledge
+TM 060,Grass Pledge
+TM 061,Grass Pledge
+TM 062,Grass Pledge
+TM 063,Grass Pledge
+TM 064,Grass Pledge
+TM 065,Grass Pledge
+TM 066,Grass Pledge
+TM 067,Grass Pledge
+TM 068,Grass Pledge
+TM 069,Grass Pledge
+TM 070,Grass Pledge
+TM 071,Grass Pledge
+TM 072,Grass Pledge
+TM 073,Grass Pledge
+TM 074,Grass Pledge
+TM 075,Grass Pledge
+TM 076,Grass Pledge
+TM 077,Grass Pledge
+TM 078,Grass Pledge
+TM 079,Grass Pledge
+TM 080,Grass Pledge
+TM 081,Grass Pledge
+TM 082,Grass Pledge
+TM 083,Grass Pledge
+TM 084,Grass Pledge
+TM 085,Grass Pledge
+TM 086,Grass Pledge
+TM 087,Grass Pledge
+TM 088,Grass Pledge
+TM 089,Grass Pledge
+TM 090,Grass Pledge
+TM 091,Grass Pledge
+TM 092,Grass Pledge
+TM 093,Grass Pledge
+TM 094,Grass Pledge
+TM 095,Grass Pledge
+TM 096,Grass Pledge
+TM 097,Grass Pledge
+TM 098,Grass Pledge
+TM 099,Grass Pledge
+TM 100,Grass Pledge
+HM 001,Grass Pledge
+HM 002,Grass Pledge
+HM 003,Grass Pledge
+HM 004,Grass Pledge
+HM 005,Grass Pledge
+HM 006,Grass Pledge
+HM 007,Grass Pledge
+HM 008,Grass Pledge
 Pledges,Grass Pledge
 Pledges,Fire Pledge
 Pledges,Water Pledge

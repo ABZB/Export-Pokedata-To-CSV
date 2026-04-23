@@ -38,7 +38,7 @@ def get_default_custom_csv(base_name, reference_directory, game = '', dual_bool 
             temp = list(reader_head)
             if(dual_bool):
                 for line in temp:
-                    print(line)
+
                     if(line[1] != '' or line[0] == '0'):
                         if(line[0][0:2].upper() in {'TM', "HM"}):
                             temp_custom.append(line)
