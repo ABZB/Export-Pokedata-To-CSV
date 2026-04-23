@@ -1,4 +1,4 @@
-﻿0,—
+﻿0,-
 1,Stench
 2,Drizzle
 3,Speed Boost
@@ -36,7 +36,7 @@
 35,Illuminate
 36,Trace
 37,Huge Power
-38,Hypnotoad
+38,Poison Point
 39,Inner Focus
 40,Magma Armor
 41,Water Veil
@@ -83,11 +83,11 @@
 82,Gluttony
 83,Anger Point
 84,Unburden
-85,Orichalcum Body
+85,Heatproof
 86,Simple
 87,Dry Skin
 88,Download
-89,Cosmic Fist
+89,Iron Fist
 90,Poison Heal
 91,Adaptability
 92,Skill Link
@@ -100,7 +100,7 @@
 99,No Guard
 100,Stall
 101,Technician
-102,Solar Shield
+102,Leaf Guard
 103,Klutz
 104,Mold Breaker
 105,Super Luck
@@ -127,13 +127,13 @@
 126,Contrary
 127,Unnerve
 128,Defiant
-129,Invictist
+129,Defeatist
 130,Cursed Body
 131,Healer
 132,Friend Guard
 133,Weak Armor
 134,Heavy Metal
-135,Light Heart
+135,Light Metal
 136,Multiscale
 137,Toxic Boost
 138,Flare Boost
@@ -167,7 +167,7 @@
 166,Flower Veil
 167,Cheek Pouch
 168,Protean
-169,Thick Coat
+169,Fur Coat
 170,Magician
 171,Bulletproof
 172,Competitive
@@ -177,13 +177,13 @@
 176,Stance Change
 177,Gale Wings
 178,Mega Launcher
-179,Terra Pelt
+179,Grass Pelt
 180,Symbiosis
 181,Tough Claws
 182,Pixilate
 183,Gooey
 184,Aerilate
-185,Polynoötic
+185,Parental Bond
 186,Dark Aura
 187,Fairy Aura
 188,Aura Break
@@ -205,13 +205,13 @@
 204,Liquid Voice
 205,Triage
 206,Galvanize
-207,Terra Surfer
+207,Surge Surfer
 208,Schooling
 209,Disguise
 210,Battle Bond
 211,Power Construct
 212,Corrosion
-213,Unihemispheric
+213,Comatose
 214,Queenly Majesty
 215,Innards Out
 216,Dancer
@@ -232,7 +232,3 @@
 231,Shadow Shield
 232,Prism Armor
 233,Neuroforce
-234,Mycellium Might
-235,Skywalker
-236,Electropyresis
-237,Euaspida

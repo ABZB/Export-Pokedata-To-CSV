@@ -37,11 +37,13 @@ def get_default_custom_csv(base_name, reference_directory, game = '', dual_bool 
             #load csv into an array      
             temp = list(reader_head)
             if(dual_bool):
-                if(line[1] != '' or line[0] == '0'):
-                    if(line[0][0:2].upper() in {'TM', "HM"}):
-                        temp_custom.append(line)
-                    else:
-                        temp_custom_second.append(line)
+                for line in temp:
+                    print(line)
+                    if(line[1] != '' or line[0] == '0'):
+                        if(line[0][0:2].upper() in {'TM', "HM"}):
+                            temp_custom.append(line)
+                        else:
+                            temp_custom_second.append(line)
             else:
                 for line in temp:
                     if(line[1] != '' or line[0] == '0'):
@@ -56,7 +58,7 @@ def get_default_custom_csv(base_name, reference_directory, game = '', dual_bool 
 
     #return default if custom is very small or they're the same, otherwise custom
     if(dual_bool):
-        return(temp_default, temp_default_second if (temp_default == temp_custom or len(temp_custom) <= 10) else temp_custom, temp_custom_second)
+        return(temp_default if (temp_default == temp_custom or len(temp_custom) <= 10) else temp_custom, temp_default_second if (temp_default == temp_custom or len(temp_custom) <= 10) else temp_custom_second)
     else:
         return(temp_default if (temp_default == temp_custom or len(temp_custom) <= 10) else temp_custom)
 
@@ -141,7 +143,7 @@ def main():
     print('Loaded Item Name List')
 
     #load TM/HM/Special Tutor names
-    pokearray.tm_name_list, pokearray.special_tutor_name_list, _ = get_default_custom_csv('tm_hm_special_tutor_list', reference_directory, pokearray.game, dual_bool = True)
+    pokearray.tm_name_list, pokearray.special_tutor_name_list = get_default_custom_csv('tm_hm_special_tutor_list', reference_directory, pokearray.game, dual_bool = True)
     print('Loaded TM/HM/Special Tutor Move Name Lists')
 
     

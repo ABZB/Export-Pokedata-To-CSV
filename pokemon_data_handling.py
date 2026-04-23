@@ -281,9 +281,9 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
             else:
                 temp_array.append([index, 'Level Up', 'Evolve' if current_personal[line_offset + 2] == 0 else current_personal[line_offset + 2], pokearray.move_name_list[from_little_bytes_int(current_personal[line_offset:line_offset + 2])]])
             
-        #TM/HM 1-100, HM 1-8
+        #TM/HM 1-100, HM 1-8 or TM128
         bit_count = 0
-        for offset in range(14):
+        for offset in range(16):
             byte_value = personal[0x28 + offset]
 
             #iterate through the bits of current byte

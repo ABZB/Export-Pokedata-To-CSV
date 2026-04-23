@@ -11,7 +11,7 @@ def build_move_output_array(pokearray):
             temp_array.append([move_index, 'Name', pokearray.move_name_list[move_index]])
         except Exception as e:
             print(e)
-            break
+            return(pokearray)
         #Category
         temp_array.append([move_index, 'Category', move_categories[move_block[2]]])
 
