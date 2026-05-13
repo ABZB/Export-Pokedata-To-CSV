@@ -246,13 +246,39 @@ def main():
             print('Error: no subfolder named ExtractedExeFS or exefs')  
             return
 
-
-        #get tutor table
-        tutor_table_raw = convert_bytes_to_ntuples(binary_file_read_to_flag(code_file_path, offset = tutor_table_offset), 2)
+        if(pokearray.game != 'USUM'):
+            #get tutor table
+            tutor_table_raw = convert_bytes_to_ntuples(binary_file_read_to_flag(code_file_path, offset = tutor_table_offset), 2)
         
-        #every two bytes is a move
-        for x in tutor_table_raw:
-            pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[x])
+            #every two bytes is a move
+            for x in tutor_table_raw:
+                pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[x])
+        else:
+            #load first table
+            tutor_table_raw = convert_bytes_to_ntuples(binary_file_to_array(code_file_path, offset = 0x004E6860, read_length = 136), 2)
+            table_2 = []
+            #if last byte is still 0xFFFF, drop it and do nothing
+            if(tutor_table_raw[-1] == 0xFFFF):
+                tutor_table_raw.pop()
+            else:
+                table_2 = convert_bytes_to_ntuples(binary_file_to_array(code_file_path, offset = 0x004BB7BE, read_length = 168), 2)
+
+                temp = 0
+                while True:
+
+                    if(table_2[-1] >= len(pokearray.move_name_list) or table_2[-1] == 0):
+                       table_2.pop()
+                    else:
+                        break
+                    if(len(table_2) == 0):
+                        break
+                
+            for x in tutor_table_raw:
+                pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[x])
+            for x in table_2:
+                pokearray.bp_tutor_move_name_list.append(pokearray.move_name_list[x])
+
+
 
 
             

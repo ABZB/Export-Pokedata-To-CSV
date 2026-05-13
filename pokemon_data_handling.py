@@ -38,7 +38,7 @@ def make_eggs_list(pokearray, underlying_source_index = 0, ):
             #each move is 2 bytes. in XY/ORAS first two bytes are count of egg moves. In SM/USUM before those bytes are the pointer to the alt forme egg move file
             temp_egg = []
             for x in range((2 if pokearray.game in {'XY', 'ORAS'} else 4), len(pokearray.egg[egg_index]), 2):
-                temp_egg.append([index, 'Egg Move', '', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
+                temp_egg.append([index, 'Egg Move', 'Egg Move', pokearray.move_name_list[from_little_bytes_int(pokearray.egg[egg_index][x:x + 2])]])
 
             pokearray.egg_array[index] = temp_egg
 
@@ -336,7 +336,7 @@ def build_total_output_array(pokearray, base_index = 0, target_index = 0, forme_
                     #check if this bit is 1
                     if(byte_value & (1 << bit_position) == (1 << bit_position)):
                         #Index, TM/HM, [TM][HM] XXX, move name
-                        temp_array.append([index, 'Move Tutor', 'Big Wave Beach' if bit_count <= 15 else 'Heahea Beach' if bit_count <= 31 else "Ula'ula Beach" if bit_count <= 48 else 'Battle Tree', pokearray.bp_tutor_move_name_list[bit_count]])
+                        temp_array.append([index, 'Move Tutor', 'BP', pokearray.bp_tutor_move_name_list[bit_count]])
                     bit_count += 1
 
         #Evolve From

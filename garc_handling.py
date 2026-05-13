@@ -202,6 +202,8 @@ def get_GARC_path(target, gameassert):
                     targetpath = '0/1/2'
                 case "Move":
                     targetpath = '0/1/1'
+                case "Mega":
+                    targetpath = '0/1/5'
         case "Select Game":
                print("Error: Game not set")
                return
